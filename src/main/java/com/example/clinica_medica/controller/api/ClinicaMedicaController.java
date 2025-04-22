@@ -5,6 +5,8 @@ import com.example.clinica_medica.entities.Medico;
 import com.example.clinica_medica.entities.Paciente;
 import com.example.clinica_medica.entities.Usuario;
 import com.example.clinica_medica.services.*;
+import com.example.clinica_medica.utils.CPFUtils;
+import com.example.clinica_medica.utils.EmailUtils;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +26,17 @@ public class ClinicaMedicaController {
   @Autowired private ConsultaService consultaService;
 
   @PostMapping("/usuarios")
-  public ResponseEntity<Usuario> cadastrarUsuario(@Valid @RequestBody Usuario usuario) {
+  public ResponseEntity<?> cadastrarUsuario(@Valid @RequestBody Usuario usuario) {
+    if (!CPFUtils.isCPFValido(usuario.getCpf())) {
+      return ResponseEntity.badRequest().body("CPF inválido.");
+    }
+
+    if (!EmailUtils.isEmailValido(usuario.getEmail())) {
+      return ResponseEntity.badRequest().body("E-mail inválido.");
+    }
+
     return ResponseEntity.ok(usuarioService.incluirUsuario(usuario));
   }
-
   @GetMapping("/usuarios")
   public ResponseEntity<List<Usuario>> listarUsuarios() {
     return ResponseEntity.ok(usuarioService.listarTodosUsuarios());

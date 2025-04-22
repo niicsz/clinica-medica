@@ -2,6 +2,8 @@ package com.example.clinica_medica.controller.web;
 
 import com.example.clinica_medica.entities.Usuario;
 import com.example.clinica_medica.services.UsuarioService;
+import com.example.clinica_medica.utils.CPFUtils;
+import com.example.clinica_medica.utils.EmailUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,9 +32,18 @@ public class WebUsuarioController {
 
   @PostMapping("/salvar")
   public String salvarUsuario(
-      @Valid @ModelAttribute("usuario") Usuario usuario,
-      BindingResult result,
-      RedirectAttributes attributes) {
+          @Valid @ModelAttribute("usuario") Usuario usuario,
+          BindingResult result,
+          RedirectAttributes attributes) {
+
+    if (!CPFUtils.isCPFValido(usuario.getCpf())) {
+      result.rejectValue("cpf", "error.usuario", "CPF inválido");
+    }
+
+    if (!EmailUtils.isEmailValido(usuario.getEmail())) {
+      result.rejectValue("email", "error.usuario", "E-mail inválido");
+    }
+
     if (result.hasErrors()) {
       return "usuarios/form";
     }
