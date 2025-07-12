@@ -32,14 +32,16 @@ public class UsuarioService {
 
   @Transactional
   public void excluirUsuario(Long id) {
-    usuarioRepository.findById(id)
+    usuarioRepository
+        .findById(id)
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     usuarioRepository.deleteById(id);
   }
 
   @Transactional
   public Usuario atualizarUsuario(Long id, Usuario usuario) {
-    usuarioRepository.findById(id)
+    usuarioRepository
+        .findById(id)
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     validarCPFEEmail(usuario);
     usuario.setId(id.intValue());
@@ -49,7 +51,8 @@ public class UsuarioService {
 
   @Transactional(readOnly = true)
   public Usuario buscarUsuarioPorId(Long id) {
-    return usuarioRepository.findById(id)
+    return usuarioRepository
+        .findById(id)
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
   }
 
