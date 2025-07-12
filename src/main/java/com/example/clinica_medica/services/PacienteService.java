@@ -3,50 +3,54 @@ package com.example.clinica_medica.services;
 import com.example.clinica_medica.entities.Paciente;
 import com.example.clinica_medica.repositories.PacienteRepository;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PacienteService {
-  @Autowired private PacienteRepository pacienteRepository;
+    private final PacienteRepository pacienteRepository;
+    private final ValidationService validationService;
 
-  @Autowired private ValidationService validationService;
+    public PacienteService(PacienteRepository pacienteRepository, ValidationService validationService) {
+        this.pacienteRepository = pacienteRepository;
+        this.validationService = validationService;
+    }
 
-  @Transactional
-  public Paciente incluirPaciente(Paciente paciente) {
-    validationService.validarPaciente(paciente);
-    return pacienteRepository.save(paciente);
-  }
+    @Transactional
+    public Paciente incluirPaciente(Paciente paciente) {
+        validationService.validarPaciente(paciente);
+        return pacienteRepository.save(paciente);
+    }
 
-  @Transactional(readOnly = true)
-  public Paciente buscarPacientePorCpf(String cpf) {
-    return pacienteRepository.findByCpf(cpf);
-  }
+    @Transactional(readOnly = true)
+    public Paciente buscarPacientePorCpf(String cpf) {
+        return pacienteRepository.findByCpf(cpf);
+    }
 
-  @Transactional(readOnly = true)
-  public List<Paciente> listarTodosPacientes() {
-    return pacienteRepository.findAll();
-  }
+    @Transactional(readOnly = true)
+    public List<Paciente> listarTodosPacientes() {
+        return pacienteRepository.findAll();
+    }
 
-  @Transactional
-  public void excluirPaciente(Long id) {
-    pacienteRepository.deleteById(id);
-  }
-
-  @Transactional
-  public Paciente atualizarPaciente(Long id, Paciente paciente) {
-    Paciente existingPaciente =
-        pacienteRepository
-            .findById(id)
+    @Transactional
+    public void excluirPaciente(Long id) {
+        pacienteRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
-    paciente.setId(id);
-    validationService.validarPaciente(paciente);
-    return pacienteRepository.save(paciente);
-  }
+        pacienteRepository.deleteById(id);
+    }
 
-  @Transactional(readOnly = true)
-  public Paciente buscarPacientePorId(Long id) {
-    return pacienteRepository.findById(id).orElse(null);
-  }
+    @Transactional
+    public Paciente atualizarPaciente(Long id, Paciente paciente) {
+        pacienteRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        paciente.setId(id);
+        validationService.validarPaciente(paciente);
+        return pacienteRepository.save(paciente);
+    }
+
+    @Transactional(readOnly = true)
+    public Paciente buscarPacientePorId(Long id) {
+        return pacienteRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+    }
 }

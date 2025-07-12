@@ -6,7 +6,6 @@ import com.example.clinica_medica.entities.Usuario;
 import com.example.clinica_medica.services.MedicoService;
 import com.example.clinica_medica.services.PacienteService;
 import com.example.clinica_medica.services.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,66 +15,86 @@ import org.springframework.context.annotation.Profile;
 @Profile("test")
 public class TestConfig {
 
-  @Autowired private MedicoService medicoService;
+    private final MedicoService medicoService;
+    private final PacienteService pacienteService;
+    private final UsuarioService usuarioService;
 
-  @Autowired private PacienteService pacienteService;
+    public TestConfig(
+            MedicoService medicoService,
+            PacienteService pacienteService,
+            UsuarioService usuarioService) {
+        this.medicoService = medicoService;
+        this.pacienteService = pacienteService;
+        this.usuarioService = usuarioService;
+    }
 
-  @Autowired private UsuarioService usuarioService;
+    @Bean
+    public CommandLineRunner initTestData() {
+        return args -> {
+            criarMedicos();
+            criarPacientes();
+            criarUsuarios();
+        };
+    }
 
-  @Bean
-  public CommandLineRunner initTestData() {
-    return args -> {
-      Medico medico1 = new Medico();
-      medico1.setNome("Dr. João Silva");
-      medico1.setEspecialidade("Cardiologia");
-      medicoService.incluirMedico(medico1);
+    private void criarMedicos() {
+        var medicos = new Medico[] {
+            criarMedico("Dr. João Silva", "Cardiologia"),
+            criarMedico("Dra. Maria Souza", "Pediatria"),
+            criarMedico("Dr. Pedro Santos", "Ortopedia")
+        };
 
-      Medico medico2 = new Medico();
-      medico2.setNome("Dra. Maria Souza");
-      medico2.setEspecialidade("Pediatria");
-      medicoService.incluirMedico(medico2);
+        for (Medico medico : medicos) {
+            medicoService.incluirMedico(medico);
+        }
+    }
 
-      Medico medico3 = new Medico();
-      medico3.setNome("Dr. Pedro Santos");
-      medico3.setEspecialidade("Ortopedia");
-      medicoService.incluirMedico(medico3);
+    private void criarPacientes() {
+        var pacientes = new Paciente[] {
+            criarPaciente("Ana Oliveira", "12345678901", 35, "ana@email.com"),
+            criarPaciente("Carlos Pereira", "98765432109", 42, "carlos@email.com"),
+            criarPaciente("Mariana Costa", "45678912345", 28, "mariana@email.com")
+        };
 
-      Paciente paciente1 = new Paciente();
-      paciente1.setNome("Ana Oliveira");
-      paciente1.setCpf("12345678901");
-      paciente1.setIdade(35);
-      paciente1.setEmail("ana@email.com");
-      pacienteService.incluirPaciente(paciente1);
+        for (Paciente paciente : pacientes) {
+            pacienteService.incluirPaciente(paciente);
+        }
+    }
 
-      Paciente paciente2 = new Paciente();
-      paciente2.setNome("Carlos Pereira");
-      paciente2.setCpf("98765432109");
-      paciente2.setIdade(42);
-      paciente2.setEmail("carlos@email.com");
-      pacienteService.incluirPaciente(paciente2);
+    private void criarUsuarios() {
+        var usuarios = new Usuario[] {
+            criarUsuario("Admin", "11111111111", 40, "admin@clinica.com", "senha123"),
+            criarUsuario("Recepcionista", "22222222222", 35, "recepcao@clinica.com", "senha456")
+        };
 
-      Paciente paciente3 = new Paciente();
-      paciente3.setNome("Mariana Costa");
-      paciente3.setCpf("45678912345");
-      paciente3.setIdade(28);
-      paciente3.setEmail("mariana@email.com");
-      pacienteService.incluirPaciente(paciente3);
+        for (Usuario usuario : usuarios) {
+            usuarioService.incluirUsuario(usuario);
+        }
+    }
 
-      Usuario usuario1 = new Usuario();
-      usuario1.setNome("Admin");
-      usuario1.setCpf("11111111111");
-      usuario1.setIdade(40);
-      usuario1.setEmail("admin@clinica.com");
-      usuario1.setSenha("senha123");
-      usuarioService.incluirUsuario(usuario1);
+    private Medico criarMedico(String nome, String especialidade) {
+        var medico = new Medico();
+        medico.setNome(nome);
+        medico.setEspecialidade(especialidade);
+        return medico;
+    }
 
-      Usuario usuario2 = new Usuario();
-      usuario2.setNome("Recepcionista");
-      usuario2.setCpf("22222222222");
-      usuario2.setIdade(35);
-      usuario2.setEmail("recepcao@clinica.com");
-      usuario2.setSenha("senha456");
-      usuarioService.incluirUsuario(usuario2);
-    };
-  }
+    private Paciente criarPaciente(String nome, String cpf, int idade, String email) {
+        var paciente = new Paciente();
+        paciente.setNome(nome);
+        paciente.setCpf(cpf);
+        paciente.setIdade(idade);
+        paciente.setEmail(email);
+        return paciente;
+    }
+
+    private Usuario criarUsuario(String nome, String cpf, int idade, String email, String senha) {
+        var usuario = new Usuario();
+        usuario.setNome(nome);
+        usuario.setCpf(cpf);
+        usuario.setIdade(idade);
+        usuario.setEmail(email);
+        usuario.setSenha(senha);
+        return usuario;
+    }
 }

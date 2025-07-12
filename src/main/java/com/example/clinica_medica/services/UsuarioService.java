@@ -2,19 +2,25 @@ package com.example.clinica_medica.services;
 
 import com.example.clinica_medica.entities.Usuario;
 import com.example.clinica_medica.repositories.UsuarioRepository;
+import com.example.clinica_medica.utils.CPFUtils;
+import com.example.clinica_medica.utils.EmailUtils;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UsuarioService {
-  @Autowired private UsuarioRepository usuarioRepository;
+  private final UsuarioRepository usuarioRepository;
+  private final ValidationService validationService;
 
-  @Autowired private ValidationService validationService;
+  public UsuarioService(UsuarioRepository usuarioRepository, ValidationService validationService) {
+    this.usuarioRepository = usuarioRepository;
+    this.validationService = validationService;
+  }
 
   @Transactional
   public Usuario incluirUsuario(Usuario usuario) {
+    validarCPFEEmail(usuario);
     validationService.validarUsuario(usuario);
     return usuarioRepository.save(usuario);
   }
@@ -26,15 +32,16 @@ public class UsuarioService {
 
   @Transactional
   public void excluirUsuario(Long id) {
+    usuarioRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     usuarioRepository.deleteById(id);
   }
 
   @Transactional
   public Usuario atualizarUsuario(Long id, Usuario usuario) {
-    Usuario existingUsuario =
-        usuarioRepository
-            .findById(id)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    usuarioRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    validarCPFEEmail(usuario);
     usuario.setId(id.intValue());
     validationService.validarUsuario(usuario);
     return usuarioRepository.save(usuario);
@@ -42,6 +49,16 @@ public class UsuarioService {
 
   @Transactional(readOnly = true)
   public Usuario buscarUsuarioPorId(Long id) {
-    return usuarioRepository.findById(id).orElse(null);
+    return usuarioRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+  }
+
+  private void validarCPFEEmail(Usuario usuario) {
+    if (!CPFUtils.isCPFValido(usuario.getCpf())) {
+      throw new IllegalArgumentException("CPF inválido");
+    }
+    if (!EmailUtils.isEmailValido(usuario.getEmail())) {
+      throw new IllegalArgumentException("E-mail inválido");
+    }
   }
 }
