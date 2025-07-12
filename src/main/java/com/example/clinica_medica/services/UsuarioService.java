@@ -1,6 +1,7 @@
 package com.example.clinica_medica.services;
 
 import com.example.clinica_medica.entities.Usuario;
+import com.example.clinica_medica.exceptions.ResourceNotFoundException;
 import com.example.clinica_medica.repositories.UsuarioRepository;
 import com.example.clinica_medica.utils.CPFUtils;
 import com.example.clinica_medica.utils.EmailUtils;
@@ -34,7 +35,7 @@ public class UsuarioService {
   public void excluirUsuario(Long id) {
     usuarioRepository
         .findById(id)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     usuarioRepository.deleteById(id);
   }
 
@@ -42,7 +43,7 @@ public class UsuarioService {
   public Usuario atualizarUsuario(Long id, Usuario usuario) {
     usuarioRepository
         .findById(id)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     validarCPFEEmail(usuario);
     usuario.setId(id.intValue());
     validationService.validarUsuario(usuario);
@@ -53,7 +54,7 @@ public class UsuarioService {
   public Usuario buscarUsuarioPorId(Long id) {
     return usuarioRepository
         .findById(id)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
   }
 
   private void validarCPFEEmail(Usuario usuario) {
