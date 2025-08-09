@@ -32,9 +32,9 @@ public class WebUsuarioController {
 
   @PostMapping("/salvar")
   public String salvarUsuario(
-          @Valid @ModelAttribute("usuario") Usuario usuario,
-          BindingResult result,
-          RedirectAttributes attributes) {
+      @Valid @ModelAttribute("usuario") Usuario usuario,
+      BindingResult result,
+      RedirectAttributes attributes) {
 
     if (!CPFUtils.isCPFValido(usuario.getCpf())) {
       result.rejectValue("cpf", "error.usuario", "CPF inválido");

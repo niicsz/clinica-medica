@@ -37,6 +37,7 @@ public class ClinicaMedicaController {
 
     return ResponseEntity.ok(usuarioService.incluirUsuario(usuario));
   }
+
   @GetMapping("/usuarios")
   public ResponseEntity<List<Usuario>> listarUsuarios() {
     return ResponseEntity.ok(usuarioService.listarTodosUsuarios());
