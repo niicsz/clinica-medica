@@ -1,8 +1,8 @@
 package com.example.clinica_medica.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -23,8 +23,7 @@ public class GlobalExceptionHandler {
     return "redirect:" + (referer != null ? referer : "/");
   }
 
-  @ExceptionHandler(
-      value = {DataIntegrityViolationException.class, ConstraintViolationException.class})
+  @ExceptionHandler(value = {DataIntegrityViolationException.class})
   public ResponseEntity<Object> handleDataIntegrityViolation(
       Exception ex, HttpServletRequest request) {
     if (request.getRequestURI().startsWith("/api")) {
@@ -43,7 +42,7 @@ public class GlobalExceptionHandler {
       String mensagemErro;
 
       if (ex instanceof DataIntegrityViolationException
-          || ex.getCause() instanceof ConstraintViolationException) {
+          || ex.getCause() instanceof DuplicateKeyException) {
         mensagemErro =
             "Não é possível excluir este registro porque está sendo usado em outro local.";
       } else {
