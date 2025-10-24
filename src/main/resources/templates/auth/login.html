@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(~{::title}, ~{::section})}">
+<head>
+  <title>Entrar - Clínica Médica</title>
+</head>
+<body>
+<section class="row justify-content-center">
+  <div class="col-lg-5 col-md-7">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h2 class="mb-4 text-center">Acessar o sistema</h2>
+        <form th:action="@{/auth/login}" th:object="${loginForm}" method="post">
+          <div class="mb-3">
+            <label for="email" class="form-label">E-mail</label>
+            <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="seu@email.com" required>
+            <div class="text-danger mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+          </div>
+
+          <div class="mb-3">
+            <label for="senha" class="form-label">Senha</label>
+            <input type="password" class="form-control" id="senha" th:field="*{senha}" placeholder="••••••" required>
+            <div class="text-danger mt-1" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
+          </div>
+
+          <div class="text-danger mb-3" th:if="${#fields.hasGlobalErrors()}">
+            <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Entrar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

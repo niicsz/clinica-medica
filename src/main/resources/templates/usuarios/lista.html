@@ -28,6 +28,7 @@
                         <th>CPF</th>
                         <th>Idade</th>
                         <th>Email</th>
+                        <th>Perfis</th>
                         <th>Ações</th>
                     </tr>
                     </thead>
@@ -38,6 +39,9 @@
                         <td th:text="${usuario.cpf}">123.456.789-00</td>
                         <td th:text="${usuario.idade}">30</td>
                         <td th:text="${usuario.email}">usuario@email.com</td>
+                        <td>
+                            <span class="badge bg-info text-dark me-1" th:each="role : ${usuario.roles}" th:text="${role}">ADMIN</span>
+                        </td>
                         <td>
                             <div class="btn-group" role="group">
                                 <a th:href="@{/usuarios/editar/{id}(id=${usuario.id})}"

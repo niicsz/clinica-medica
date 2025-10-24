@@ -12,6 +12,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  public Object handleIllegalArgument(
+      IllegalArgumentException ex, HttpServletRequest request, RedirectAttributes attributes) {
+    if (request.getRequestURI().startsWith("/api")) {
+      return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+    attributes.addFlashAttribute("mensagemErro", ex.getMessage());
+    String referer = request.getHeader("Referer");
+    return "redirect:" + (referer != null ? referer : "/");
+  }
+
   @ExceptionHandler(
       value = {DataIntegrityViolationException.class, ConstraintViolationException.class})
   public ResponseEntity<Object> handleDataIntegrityViolation(

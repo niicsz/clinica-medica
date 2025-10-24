@@ -1,41 +1,44 @@
 package com.example.clinica_medica.entities;
 
-import jakarta.persistence.*;
+import com.example.clinica_medica.security.UserRole;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "usuarios")
+@Document(collection = "usuarios")
 public class Usuario {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+
+  @Id private String id;
 
   @NotBlank(message = "Nome é Obrigatório")
-  @Column(nullable = false, length = 100)
   private String nome;
 
   @NotBlank(message = "CPF é obrigatório")
-  @Column(nullable = false, unique = true, length = 11)
+  @Indexed(unique = true)
   @Size(min = 11, max = 11, message = "CPF deve ter 11 caracteres")
   private String cpf;
 
-  @Column(nullable = false)
   private Integer idade;
 
   @Email(message = "Email é inválido")
   @NotBlank(message = "Email é obrigatório")
-  @Column(nullable = false, length = 100)
+  @Indexed(unique = true)
   private String email;
 
-  @NotBlank(message = "Senha é Obrigatória")
-  @Column(nullable = false, length = 100)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String senha;
+
+  private Set<UserRole> roles = new HashSet<>();
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MedicoService {
@@ -14,19 +13,16 @@ public class MedicoService {
 
   @Autowired private ValidationService validationService;
 
-  @Transactional
   public Medico incluirMedico(Medico medico) {
     validationService.validarMedico(medico);
     return medicoRepository.save(medico);
   }
 
-  @Transactional
-  public void excluirMedico(Long id) {
+  public void excluirMedico(String id) {
     medicoRepository.deleteById(id);
   }
 
-  @Transactional
-  public Medico atualizarMedico(Long id, Medico medico) {
+  public Medico atualizarMedico(String id, Medico medico) {
     Medico existingMedico = buscarMedicoPorId(id);
     if (existingMedico == null) {
       throw new RuntimeException("Médico não encontrado");
@@ -36,13 +32,11 @@ public class MedicoService {
     return medicoRepository.save(medico);
   }
 
-  @Transactional(readOnly = true)
-  public Medico buscarMedicoPorId(Long id) {
+  public Medico buscarMedicoPorId(String id) {
     Optional<Medico> medico = medicoRepository.findById(id);
     return medico.orElse(null);
   }
 
-  @Transactional(readOnly = true)
   public List<Medico> listarTodosMedicos() {
     return medicoRepository.findAll();
   }

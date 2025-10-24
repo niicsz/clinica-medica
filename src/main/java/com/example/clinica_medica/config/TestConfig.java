@@ -3,6 +3,7 @@ package com.example.clinica_medica.config;
 import com.example.clinica_medica.entities.Medico;
 import com.example.clinica_medica.entities.Paciente;
 import com.example.clinica_medica.entities.Usuario;
+import com.example.clinica_medica.security.UserRole;
 import com.example.clinica_medica.services.MedicoService;
 import com.example.clinica_medica.services.PacienteService;
 import com.example.clinica_medica.services.UsuarioService;
@@ -66,7 +67,8 @@ public class TestConfig {
       usuario1.setCpf("11111111111");
       usuario1.setIdade(40);
       usuario1.setEmail("admin@clinica.com");
-      usuario1.setSenha("senha123");
+      usuario1.setSenha("Senha123!");
+      usuario1.setRoles(java.util.Set.of(UserRole.ADMIN));
       usuarioService.incluirUsuario(usuario1);
 
       Usuario usuario2 = new Usuario();
@@ -74,7 +76,8 @@ public class TestConfig {
       usuario2.setCpf("22222222222");
       usuario2.setIdade(35);
       usuario2.setEmail("recepcao@clinica.com");
-      usuario2.setSenha("senha456");
+      usuario2.setSenha("Senha456!");
+      usuario2.setRoles(java.util.Set.of(UserRole.RECEPCIONISTA));
       usuarioService.incluirUsuario(usuario2);
     };
   }

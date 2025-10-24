@@ -38,17 +38,24 @@ public class WebMedicoController {
     }
 
     try {
-      medicoService.incluirMedico(medico);
-      attributes.addFlashAttribute("mensagem", "Médico cadastrado com sucesso!");
+      if (medico.getId() == null) {
+        medicoService.incluirMedico(medico);
+        attributes.addFlashAttribute("mensagem", "Médico cadastrado com sucesso!");
+      } else {
+        medicoService.atualizarMedico(medico.getId(), medico);
+        attributes.addFlashAttribute("mensagem", "Médico atualizado com sucesso!");
+      }
       return "redirect:/medicos";
     } catch (Exception e) {
       attributes.addFlashAttribute("mensagemErro", "Erro ao cadastrar médico: " + e.getMessage());
-      return "redirect:/medicos/novo";
+      return medico.getId() == null
+          ? "redirect:/medicos/novo"
+          : "redirect:/medicos/editar/" + medico.getId();
     }
   }
 
   @GetMapping("/editar/{id}")
-  public String formEditarMedico(@PathVariable Long id, Model model) {
+  public String formEditarMedico(@PathVariable String id, Model model) {
     Medico medico = medicoService.buscarMedicoPorId(id);
     if (medico == null) {
       return "redirect:/medicos";
@@ -58,7 +65,7 @@ public class WebMedicoController {
   }
 
   @GetMapping("/excluir/{id}")
-  public String excluirMedico(@PathVariable Long id, RedirectAttributes attributes) {
+  public String excluirMedico(@PathVariable String id, RedirectAttributes attributes) {
     try {
       medicoService.excluirMedico(id);
       attributes.addFlashAttribute("mensagem", "Médico excluído com sucesso!");
