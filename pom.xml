@@ -30,6 +30,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <de.flapdoodle.embed.mongo.version>4.12.3</de.flapdoodle.embed.mongo.version>
     </properties>
     <dependencies>
         <dependency>
@@ -86,6 +87,7 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <version>${de.flapdoodle.embed.mongo.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
