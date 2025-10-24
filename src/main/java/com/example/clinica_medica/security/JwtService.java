@@ -6,6 +6,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -18,13 +20,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtService {
 
-  private final String secret;
+  private final Key signingKey;
   private final Duration expiration;
 
   public JwtService(
       @Value("${security.jwt.secret}") String secret,
       @Value("${security.jwt.expiration}") String expiration) {
-    this.secret = secret;
+    this.signingKey = createSigningKey(secret);
     this.expiration = Duration.parse(expiration);
   }
 
@@ -73,7 +75,16 @@ public class JwtService {
   }
 
   private Key getSigningKey() {
-    byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-    return Keys.hmacShaKeyFor(keyBytes);
+    return signingKey;
+  }
+
+  private Key createSigningKey(String secret) {
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      byte[] hashed = digest.digest(secret.getBytes(StandardCharsets.UTF_8));
+      return Keys.hmacShaKeyFor(hashed);
+    } catch (NoSuchAlgorithmException ex) {
+      throw new IllegalStateException("SHA-256 algorithm not available", ex);
+    }
   }
 }
