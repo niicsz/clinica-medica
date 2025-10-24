@@ -26,6 +26,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <spring-boot.version>3.3.5</spring-boot.version>
         <de.flapdoodle.embed.mongo.version>4.12.3</de.flapdoodle.embed.mongo.version>
+        <lombok.version>1.18.34</lombok.version>
     </properties>
 
     <dependencyManagement>
@@ -63,6 +64,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -148,6 +150,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
