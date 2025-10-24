@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: clinica-medica
+  data:
+    mongodb:
+      database: clinica-medica
+      uri: mongodb+srv://pusrclinica:RockANDRoll@cluster0.txmiuke.mongodb.net/
+security:
+  jwt:
+    secret: 0123456789ABCDEF0123456789ABCDEF
+    expiration: PT2H

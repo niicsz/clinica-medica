@@ -1,0 +1,11 @@
+spring:
+  data:
+    mongodb:
+      database: clinica-medica-test
+  mongodb:
+    embedded:
+      version: 6.0.5
+security:
+  jwt:
+    secret: 0123456789ABCDEF0123456789ABCDEF
+    expiration: PT1H
