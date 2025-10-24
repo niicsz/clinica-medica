@@ -52,8 +52,28 @@
         </div>
 
         <div class="mb-3">
+          <label for="roles" class="form-label">Perfis de acesso</label>
+          <select id="roles" class="form-select" th:field="*{roles}" multiple size="3" required>
+            <option th:each="role : ${rolesDisponiveis}" th:value="${role}" th:text="${role}"></option>
+          </select>
+          <small class="form-text text-muted">Selecione um ou mais perfis de acesso para o usuário.</small>
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}">
+            Selecione pelo menos um perfil.
+          </div>
+        </div>
+
+        <div class="mb-3">
           <label for="senha" class="form-label">Senha</label>
-          <input type="password" class="form-control" id="senha" th:field="*{senha}" required>
+          <input
+              type="password"
+              class="form-control"
+              id="senha"
+              th:field="*{senha}"
+              th:attr="required=${usuario.id == null}"
+              placeholder="••••••" />
+          <small class="form-text text-muted" th:if="${usuario.id != null}">
+            Deixe em branco para manter a senha atual.
+          </small>
           <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}">
             Senha inválida
           </div>

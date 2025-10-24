@@ -49,17 +49,36 @@ public class WebConsultaController {
     }
 
     try {
-      consultaService.agendarConsulta(consulta);
-      attributes.addFlashAttribute("mensagem", "Consulta agendada com sucesso!");
+      if (consulta.getPaciente() != null && consulta.getPaciente().getId() != null) {
+        consulta.setPaciente(
+            pacienteService.buscarPacientePorId(consulta.getPaciente().getId()));
+      }
+      if (consulta.getMedico() != null && consulta.getMedico().getId() != null) {
+        consulta.setMedico(medicoService.buscarMedicoPorId(consulta.getMedico().getId()));
+      }
+
+      if (consulta.getPaciente() == null || consulta.getMedico() == null) {
+        throw new IllegalArgumentException("Paciente e médico devem ser informados");
+      }
+
+      if (consulta.getId() == null) {
+        consultaService.agendarConsulta(consulta);
+        attributes.addFlashAttribute("mensagem", "Consulta agendada com sucesso!");
+      } else {
+        consultaService.atualizarConsulta(consulta.getId(), consulta);
+        attributes.addFlashAttribute("mensagem", "Consulta atualizada com sucesso!");
+      }
       return "redirect:/consultas";
     } catch (Exception e) {
       attributes.addFlashAttribute("mensagemErro", "Erro ao agendar consulta: " + e.getMessage());
-      return "redirect:/consultas/nova";
+      return consulta.getId() == null
+          ? "redirect:/consultas/nova"
+          : "redirect:/consultas/editar/" + consulta.getId();
     }
   }
 
   @GetMapping("/editar/{id}")
-  public String formEditarConsulta(@PathVariable Long id, Model model) {
+  public String formEditarConsulta(@PathVariable String id, Model model) {
     Consulta consulta = consultaService.buscarConsultaPorId(id);
     if (consulta == null) {
       return "redirect:/consultas";
@@ -71,7 +90,7 @@ public class WebConsultaController {
   }
 
   @GetMapping("/excluir/{id}")
-  public String excluirConsulta(@PathVariable Long id, RedirectAttributes attributes) {
+  public String excluirConsulta(@PathVariable String id, RedirectAttributes attributes) {
     try {
       consultaService.excluirConsulta(id);
       attributes.addFlashAttribute("mensagem", "Consulta excluída com sucesso!");

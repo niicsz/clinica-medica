@@ -1,37 +1,32 @@
 package com.example.clinica_medica.entities;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "consultas")
+@Document(collection = "consultas")
 public class Consulta {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @Id private String id;
 
   @NotNull(message = "Paciente é obrigatório")
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "paciente_id", nullable = false)
+  @DBRef
   private Paciente paciente;
 
   @NotNull(message = "Médico é obrigatório")
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "medico_id", nullable = false)
+  @DBRef
   private Medico medico;
 
   @NotNull(message = "Data e hora são obrigatórias")
-  @Column(nullable = false)
   private LocalDateTime dataHora;
 
   @NotNull(message = "Tipo de consulta é obrigatório")
-  @Column(nullable = false, length = 50)
   private String tipoConsulta;
 }

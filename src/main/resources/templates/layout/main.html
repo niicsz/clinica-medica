@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
       th:fragment="layout(title, content)">
 <head>
     <meta charset="UTF-8">
@@ -37,23 +37,37 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
                     <a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Home</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" href="/usuarios"><i class="bi bi-people-fill"></i> Usuários</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA','MEDICO')">
                     <a class="nav-link" href="/pacientes"><i class="bi bi-person-fill"></i> Pacientes</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
                     <a class="nav-link" href="/medicos"><i class="bi bi-hospital-fill"></i> Médicos</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
                     <a class="nav-link" href="/consultas"><i class="bi bi-calendar-check-fill"></i> Consultas</a>
                 </li>
             </ul>
+            <div class="d-flex align-items-center">
+                <div class="me-3 text-muted" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-person-check"></i>
+                    <span sec:authentication="name"></span>
+                </div>
+                <a class="btn btn-outline-primary" href="/auth/login" sec:authorize="isAnonymous()">
+                    <i class="bi bi-box-arrow-in-right"></i> Entrar
+                </a>
+                <form sec:authorize="isAuthenticated()" th:action="@{/auth/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </nav>

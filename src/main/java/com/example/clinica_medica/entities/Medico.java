@@ -1,26 +1,22 @@
 package com.example.clinica_medica.entities;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "medicos")
+@Document(collection = "medicos")
 public class Medico {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @Id private String id;
 
   @NotBlank(message = "Nome é obrigatório")
-  @Column(nullable = false, length = 100)
   private String nome;
 
   @NotBlank(message = "Especialidade é obrigatória")
-  @Column(nullable = false, length = 100)
   private String especialidade;
 }

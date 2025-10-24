@@ -5,7 +5,6 @@ import com.example.clinica_medica.repositories.ConsultaRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ConsultaService {
@@ -13,35 +12,29 @@ public class ConsultaService {
 
   @Autowired private ValidationService validationService;
 
-  @Transactional
   public Consulta agendarConsulta(Consulta consulta) {
     validationService.validarConsulta(consulta);
     return consultaRepository.save(consulta);
   }
 
-  @Transactional(readOnly = true)
   public List<Consulta> listarTodasConsultas() {
     return consultaRepository.findAll();
   }
 
-  @Transactional
-  public void excluirConsulta(Long id) {
+  public void excluirConsulta(String id) {
     consultaRepository.deleteById(id);
   }
 
-  @Transactional
-  public Consulta atualizarConsulta(Long id, Consulta consulta) {
-    Consulta existingConsulta =
-        consultaRepository
-            .findById(id)
-            .orElseThrow(() -> new RuntimeException("Consulta não encontrada"));
+  public Consulta atualizarConsulta(String id, Consulta consulta) {
+    consultaRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Consulta não encontrada"));
     consulta.setId(id);
     validationService.validarConsulta(consulta);
     return consultaRepository.save(consulta);
   }
 
-  @Transactional(readOnly = true)
-  public Consulta buscarConsultaPorId(Long id) {
+  public Consulta buscarConsultaPorId(String id) {
     return consultaRepository.findById(id).orElse(null);
   }
 }

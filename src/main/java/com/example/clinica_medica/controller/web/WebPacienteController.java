@@ -38,17 +38,24 @@ public class WebPacienteController {
     }
 
     try {
-      pacienteService.incluirPaciente(paciente);
-      attributes.addFlashAttribute("mensagem", "Paciente cadastrado com sucesso!");
+      if (paciente.getId() == null) {
+        pacienteService.incluirPaciente(paciente);
+        attributes.addFlashAttribute("mensagem", "Paciente cadastrado com sucesso!");
+      } else {
+        pacienteService.atualizarPaciente(paciente.getId(), paciente);
+        attributes.addFlashAttribute("mensagem", "Paciente atualizado com sucesso!");
+      }
       return "redirect:/pacientes";
     } catch (Exception e) {
       attributes.addFlashAttribute("mensagemErro", "Erro ao cadastrar paciente: " + e.getMessage());
-      return "redirect:/pacientes/novo";
+      return paciente.getId() == null
+          ? "redirect:/pacientes/novo"
+          : "redirect:/pacientes/editar/" + paciente.getId();
     }
   }
 
   @GetMapping("/editar/{id}")
-  public String formEditarPaciente(@PathVariable Long id, Model model) {
+  public String formEditarPaciente(@PathVariable String id, Model model) {
     Paciente paciente = pacienteService.buscarPacientePorId(id);
     if (paciente == null) {
       return "redirect:/pacientes";
@@ -58,7 +65,7 @@ public class WebPacienteController {
   }
 
   @GetMapping("/excluir/{id}")
-  public String excluirPaciente(@PathVariable Long id, RedirectAttributes attributes) {
+  public String excluirPaciente(@PathVariable String id, RedirectAttributes attributes) {
     try {
       pacienteService.excluirPaciente(id);
       attributes.addFlashAttribute("mensagem", "Paciente excluído com sucesso!");

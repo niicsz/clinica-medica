@@ -4,14 +4,24 @@ import com.example.clinica_medica.entities.Consulta;
 import com.example.clinica_medica.entities.Medico;
 import com.example.clinica_medica.entities.Paciente;
 import com.example.clinica_medica.entities.Usuario;
-import com.example.clinica_medica.services.*;
+import com.example.clinica_medica.services.ConsultaService;
+import com.example.clinica_medica.services.MedicoService;
+import com.example.clinica_medica.services.PacienteService;
+import com.example.clinica_medica.services.UsuarioService;
 import com.example.clinica_medica.utils.CPFUtils;
 import com.example.clinica_medica.utils.EmailUtils;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
@@ -44,18 +54,18 @@ public class ClinicaMedicaController {
 
   @PutMapping("/usuarios/{id}")
   public ResponseEntity<Usuario> atualizarUsuario(
-      @PathVariable Long id, @Valid @RequestBody Usuario usuario) {
+      @PathVariable String id, @Valid @RequestBody Usuario usuario) {
     return ResponseEntity.ok(usuarioService.atualizarUsuario(id, usuario));
   }
 
   @DeleteMapping("/usuarios/{id}")
-  public ResponseEntity<Void> excluirUsuario(@PathVariable Long id) {
+  public ResponseEntity<Void> excluirUsuario(@PathVariable String id) {
     usuarioService.excluirUsuario(id);
     return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/usuarios/{id}")
-  public ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable Long id) {
+  public ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable String id) {
     Usuario usuario = usuarioService.buscarUsuarioPorId(id);
     return usuario != null ? ResponseEntity.ok(usuario) : ResponseEntity.notFound().build();
   }
@@ -78,18 +88,18 @@ public class ClinicaMedicaController {
 
   @PutMapping("/pacientes/{id}")
   public ResponseEntity<Paciente> atualizarPaciente(
-      @PathVariable Long id, @Valid @RequestBody Paciente paciente) {
+      @PathVariable String id, @Valid @RequestBody Paciente paciente) {
     return ResponseEntity.ok(pacienteService.atualizarPaciente(id, paciente));
   }
 
   @DeleteMapping("/pacientes/{id}")
-  public ResponseEntity<Void> excluirPaciente(@PathVariable Long id) {
+  public ResponseEntity<Void> excluirPaciente(@PathVariable String id) {
     pacienteService.excluirPaciente(id);
     return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/pacientes/{id}")
-  public ResponseEntity<Paciente> buscarPacientePorId(@PathVariable Long id) {
+  public ResponseEntity<Paciente> buscarPacientePorId(@PathVariable String id) {
     Paciente paciente = pacienteService.buscarPacientePorId(id);
     return paciente != null ? ResponseEntity.ok(paciente) : ResponseEntity.notFound().build();
   }
@@ -105,25 +115,34 @@ public class ClinicaMedicaController {
   }
 
   @GetMapping("/medicos/{id}")
-  public ResponseEntity<Medico> buscarMedicoPorId(@PathVariable Long id) {
+  public ResponseEntity<Medico> buscarMedicoPorId(@PathVariable String id) {
     Medico medico = medicoService.buscarMedicoPorId(id);
     return medico != null ? ResponseEntity.ok(medico) : ResponseEntity.notFound().build();
   }
 
   @PutMapping("/medicos/{id}")
   public ResponseEntity<Medico> atualizarMedico(
-      @PathVariable Long id, @Valid @RequestBody Medico medico) {
+      @PathVariable String id, @Valid @RequestBody Medico medico) {
     return ResponseEntity.ok(medicoService.atualizarMedico(id, medico));
   }
 
   @DeleteMapping("/medicos/{id}")
-  public ResponseEntity<Void> excluirMedico(@PathVariable Long id) {
+  public ResponseEntity<Void> excluirMedico(@PathVariable String id) {
     medicoService.excluirMedico(id);
     return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/consultas")
   public ResponseEntity<Consulta> agendarConsulta(@Valid @RequestBody Consulta consulta) {
+    if (consulta.getPaciente() != null && consulta.getPaciente().getId() != null) {
+      consulta.setPaciente(pacienteService.buscarPacientePorId(consulta.getPaciente().getId()));
+    }
+    if (consulta.getMedico() != null && consulta.getMedico().getId() != null) {
+      consulta.setMedico(medicoService.buscarMedicoPorId(consulta.getMedico().getId()));
+    }
+    if (consulta.getPaciente() == null || consulta.getMedico() == null) {
+      throw new IllegalArgumentException("Paciente e médico devem ser informados");
+    }
     return ResponseEntity.ok(consultaService.agendarConsulta(consulta));
   }
 
@@ -134,18 +153,27 @@ public class ClinicaMedicaController {
 
   @PutMapping("/consultas/{id}")
   public ResponseEntity<Consulta> atualizarConsulta(
-      @PathVariable Long id, @Valid @RequestBody Consulta consulta) {
+      @PathVariable String id, @Valid @RequestBody Consulta consulta) {
+    if (consulta.getPaciente() != null && consulta.getPaciente().getId() != null) {
+      consulta.setPaciente(pacienteService.buscarPacientePorId(consulta.getPaciente().getId()));
+    }
+    if (consulta.getMedico() != null && consulta.getMedico().getId() != null) {
+      consulta.setMedico(medicoService.buscarMedicoPorId(consulta.getMedico().getId()));
+    }
+    if (consulta.getPaciente() == null || consulta.getMedico() == null) {
+      throw new IllegalArgumentException("Paciente e médico devem ser informados");
+    }
     return ResponseEntity.ok(consultaService.atualizarConsulta(id, consulta));
   }
 
   @DeleteMapping("/consultas/{id}")
-  public ResponseEntity<Void> excluirConsulta(@PathVariable Long id) {
+  public ResponseEntity<Void> excluirConsulta(@PathVariable String id) {
     consultaService.excluirConsulta(id);
     return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/consultas/{id}")
-  public ResponseEntity<Consulta> buscarConsultaPorId(@PathVariable Long id) {
+  public ResponseEntity<Consulta> buscarConsultaPorId(@PathVariable String id) {
     Consulta consulta = consultaService.buscarConsultaPorId(id);
     return consulta != null ? ResponseEntity.ok(consulta) : ResponseEntity.notFound().build();
   }

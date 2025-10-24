@@ -44,7 +44,7 @@ public class ValidationService {
       throw new IllegalArgumentException("Idade deve ser um número positivo");
     }
 
-    Paciente existingPaciente = pacienteRepository.findByCpf(paciente.getCpf());
+    Paciente existingPaciente = pacienteRepository.findByCpf(paciente.getCpf()).orElse(null);
     if (existingPaciente != null && !existingPaciente.getId().equals(paciente.getId())) {
       throw new IllegalArgumentException("CPF já cadastrado para outro paciente");
     }
@@ -77,13 +77,28 @@ public class ValidationService {
       throw new IllegalArgumentException("Idade deve ser um número positivo");
     }
 
-    if (usuario.getSenha() == null || usuario.getSenha().length() < 6) {
-      throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres");
+    if (usuario.getId() == null) {
+      if (usuario.getSenha() == null || usuario.getSenha().length() < 6) {
+        throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres");
+      }
+    } else {
+      if (usuario.getSenha() != null && !usuario.getSenha().isBlank() && usuario.getSenha().length() < 6) {
+        throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres");
+      }
     }
 
-    Usuario existingUsuario = usuarioRepository.findByCpf(usuario.getCpf());
-    if (existingUsuario != null && existingUsuario.getId() != usuario.getId()) {
+    if (usuario.getRoles() == null || usuario.getRoles().isEmpty()) {
+      throw new IllegalArgumentException("Usuário deve possuir ao menos uma permissão");
+    }
+
+    Usuario existingUsuario = usuarioRepository.findByCpf(usuario.getCpf()).orElse(null);
+    if (existingUsuario != null && !existingUsuario.getId().equals(usuario.getId())) {
       throw new IllegalArgumentException("CPF já cadastrado para outro usuário");
+    }
+
+    Usuario usuarioPorEmail = usuarioRepository.findByEmail(usuario.getEmail()).orElse(null);
+    if (usuarioPorEmail != null && !usuarioPorEmail.getId().equals(usuario.getId())) {
+      throw new IllegalArgumentException("E-mail já cadastrado para outro usuário");
     }
   }
 
@@ -114,7 +129,7 @@ public class ValidationService {
                 c ->
                     c.getMedico().getId().equals(consulta.getMedico().getId())
                         && c.getDataHora().equals(consulta.getDataHora())
-                        && !c.getId().equals(consulta.getId()));
+                        && (consulta.getId() == null || !c.getId().equals(consulta.getId())));
 
     if (medicoOcupado) {
       throw new IllegalArgumentException("Médico já possui consulta agendada para este horário");
