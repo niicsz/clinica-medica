@@ -19,18 +19,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
 public class AuthController implements AuthApi {
 
   @Autowired private AuthService authService;
 
-  @PostMapping("/login")
   @Override
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
     try {
@@ -43,7 +39,6 @@ public class AuthController implements AuthApi {
     }
   }
 
-  @PostMapping("/register")
   @Override
   public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
     try {
@@ -61,7 +56,9 @@ public class AuthController implements AuthApi {
       return ResponseEntity.status(HttpStatus.CREATED)
           .header(HttpHeaders.SET_COOKIE, result.cookie().toString())
           .body(result.response());
-    } catch (DuplicateKeyException | DataIntegrityViolationException ex) {
+    } catch (DuplicateKeyException ex) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (DataIntegrityViolationException ex) {
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
     } catch (IllegalArgumentException ex) {
       return ResponseEntity.badRequest().build();

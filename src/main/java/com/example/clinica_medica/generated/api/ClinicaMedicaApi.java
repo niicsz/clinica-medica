@@ -7,50 +7,84 @@ import com.example.clinica_medica.entities.Usuario;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Generated(value = "swagger-codegen", date = "2024-10-24")
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ClinicaMedicaApi {
 
-  ResponseEntity<?> cadastrarUsuario(@Valid Usuario usuario);
+  @PostMapping(value = "/usuarios", consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<?> cadastrarUsuario(@Valid @RequestBody Usuario usuario);
 
+  @GetMapping("/usuarios")
   ResponseEntity<List<Usuario>> listarUsuarios();
 
-  ResponseEntity<Usuario> atualizarUsuario(String id, @Valid Usuario usuario);
+  @PutMapping(value = "/usuarios/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Usuario> atualizarUsuario(
+      @PathVariable("id") String id, @Valid @RequestBody Usuario usuario);
 
-  ResponseEntity<Void> excluirUsuario(String id);
+  @DeleteMapping("/usuarios/{id}")
+  ResponseEntity<Void> excluirUsuario(@PathVariable("id") String id);
 
-  ResponseEntity<Usuario> buscarUsuarioPorId(String id);
+  @GetMapping("/usuarios/{id}")
+  ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable("id") String id);
 
-  ResponseEntity<Paciente> cadastrarPaciente(@Valid Paciente paciente);
+  @PostMapping(value = "/pacientes", consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Paciente> cadastrarPaciente(@Valid @RequestBody Paciente paciente);
 
+  @GetMapping("/pacientes")
   ResponseEntity<List<Paciente>> listarPacientes();
 
-  ResponseEntity<Paciente> buscarPacientePorCpf(String cpf);
+  @GetMapping("/pacientes/cpf/{cpf}")
+  ResponseEntity<Paciente> buscarPacientePorCpf(@PathVariable("cpf") String cpf);
 
-  ResponseEntity<Paciente> atualizarPaciente(String id, @Valid Paciente paciente);
+  @PutMapping(value = "/pacientes/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Paciente> atualizarPaciente(
+      @PathVariable("id") String id, @Valid @RequestBody Paciente paciente);
 
-  ResponseEntity<Void> excluirPaciente(String id);
+  @DeleteMapping("/pacientes/{id}")
+  ResponseEntity<Void> excluirPaciente(@PathVariable("id") String id);
 
-  ResponseEntity<Paciente> buscarPacientePorId(String id);
+  @GetMapping("/pacientes/{id}")
+  ResponseEntity<Paciente> buscarPacientePorId(@PathVariable("id") String id);
 
-  ResponseEntity<Medico> cadastrarMedico(@Valid Medico medico);
+  @PostMapping(value = "/medicos", consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Medico> cadastrarMedico(@Valid @RequestBody Medico medico);
 
+  @GetMapping("/medicos")
   ResponseEntity<List<Medico>> listarMedicos();
 
-  ResponseEntity<Medico> buscarMedicoPorId(String id);
+  @GetMapping("/medicos/{id}")
+  ResponseEntity<Medico> buscarMedicoPorId(@PathVariable("id") String id);
 
-  ResponseEntity<Medico> atualizarMedico(String id, @Valid Medico medico);
+  @PutMapping(value = "/medicos/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Medico> atualizarMedico(
+      @PathVariable("id") String id, @Valid @RequestBody Medico medico);
 
-  ResponseEntity<Void> excluirMedico(String id);
+  @DeleteMapping("/medicos/{id}")
+  ResponseEntity<Void> excluirMedico(@PathVariable("id") String id);
 
-  ResponseEntity<Consulta> agendarConsulta(@Valid Consulta consulta);
+  @PostMapping(value = "/consultas", consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Consulta> agendarConsulta(@Valid @RequestBody Consulta consulta);
 
+  @GetMapping("/consultas")
   ResponseEntity<List<Consulta>> listarConsultas();
 
-  ResponseEntity<Consulta> atualizarConsulta(String id, @Valid Consulta consulta);
+  @PutMapping(value = "/consultas/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Consulta> atualizarConsulta(
+      @PathVariable("id") String id, @Valid @RequestBody Consulta consulta);
 
-  ResponseEntity<Void> excluirConsulta(String id);
+  @DeleteMapping("/consultas/{id}")
+  ResponseEntity<Void> excluirConsulta(@PathVariable("id") String id);
 
-  ResponseEntity<Consulta> buscarConsultaPorId(String id);
+  @GetMapping("/consultas/{id}")
+  ResponseEntity<Consulta> buscarConsultaPorId(@PathVariable("id") String id);
 }
