@@ -4,10 +4,10 @@ import com.example.clinica_medica.generated.api.AuthApi;
 import com.example.clinica_medica.generated.model.LoginRequest;
 import com.example.clinica_medica.generated.model.RegisterRequest;
 import com.example.clinica_medica.security.UserRole;
+import com.example.clinica_medica.services.AuthResult;
+import com.example.clinica_medica.services.AuthResponse;
 import com.example.clinica_medica.services.AuthService;
-import com.example.clinica_medica.services.AuthService.AuthResult;
-import com.example.clinica_medica.services.AuthService.AuthResponse;
-import com.example.clinica_medica.services.AuthService.RegistrationData;
+import com.example.clinica_medica.services.RegistrationData;
 import jakarta.validation.Valid;
 import java.util.Collections;
 import java.util.Set;
@@ -32,8 +32,8 @@ public class AuthController implements AuthApi {
     try {
       AuthResult result = authService.authenticate(request.email(), request.senha());
       return ResponseEntity.ok()
-          .header(HttpHeaders.SET_COOKIE, result.cookie().toString())
-          .body(result.response());
+          .header(HttpHeaders.SET_COOKIE, result.getCookie().toString())
+          .body(result.getResponse());
     } catch (BadCredentialsException ex) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -54,8 +54,8 @@ public class AuthController implements AuthApi {
 
       AuthResult result = authService.register(registrationData);
       return ResponseEntity.status(HttpStatus.CREATED)
-          .header(HttpHeaders.SET_COOKIE, result.cookie().toString())
-          .body(result.response());
+          .header(HttpHeaders.SET_COOKIE, result.getCookie().toString())
+          .body(result.getResponse());
     } catch (DuplicateKeyException ex) {
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
     } catch (DataIntegrityViolationException ex) {

@@ -1,9 +1,9 @@
 package com.example.clinica_medica.controller.web;
 
 import com.example.clinica_medica.security.UserRole;
+import com.example.clinica_medica.services.AuthResult;
 import com.example.clinica_medica.services.AuthService;
-import com.example.clinica_medica.services.AuthService.AuthResult;
-import com.example.clinica_medica.services.AuthService.RegistrationData;
+import com.example.clinica_medica.services.RegistrationData;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -64,9 +64,9 @@ public class AuthWebController {
 
     try {
       AuthResult authResult = authService.authenticate(form.getEmail(), form.getSenha());
-      response.addHeader(HttpHeaders.SET_COOKIE, authResult.cookie().toString());
+      response.addHeader(HttpHeaders.SET_COOKIE, authResult.getCookie().toString());
       attributes.addFlashAttribute(
-          "mensagem", "Bem-vindo, " + authResult.response().user().nome() + "!");
+          "mensagem", "Bem-vindo, " + authResult.getResponse().getUser().getNome() + "!");
       return "redirect:/";
     } catch (BadCredentialsException ex) {
       result.reject(
@@ -103,9 +103,9 @@ public class AuthWebController {
               roles);
 
       AuthResult authResult = authService.register(registrationData);
-      response.addHeader(HttpHeaders.SET_COOKIE, authResult.cookie().toString());
+      response.addHeader(HttpHeaders.SET_COOKIE, authResult.getCookie().toString());
       attributes.addFlashAttribute(
-          "mensagem", "Conta criada com sucesso! Bem-vindo, " + authResult.response().user().nome() + "!");
+          "mensagem", "Conta criada com sucesso! Bem-vindo, " + authResult.getResponse().getUser().getNome() + "!");
       return "redirect:/";
     } catch (DuplicateKeyException ex) {
       result.reject("usuario.duplicado", "Já existe um usuário com o mesmo CPF ou e-mail.");
