@@ -1,11 +1,11 @@
 package com.example.clinica_medica.controller.api;
 
+import com.example.clinica_medica.generated.api.AuthApi;
+import com.example.clinica_medica.generated.model.LoginRequest;
 import com.example.clinica_medica.services.AuthService;
 import com.example.clinica_medica.services.AuthService.AuthResult;
 import com.example.clinica_medica.services.AuthService.AuthResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController {
+public class AuthController implements AuthApi {
 
   @Autowired private AuthService authService;
 
   @PostMapping("/login")
+  @Override
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
     try {
       AuthResult result = authService.authenticate(request.email(), request.senha());
@@ -33,7 +34,4 @@ public class AuthController {
     }
   }
 
-  public record LoginRequest(
-      @Email(message = "Email inválido") @NotBlank(message = "Email é obrigatório") String email,
-      @NotBlank(message = "Senha é obrigatória") String senha) {}
 }

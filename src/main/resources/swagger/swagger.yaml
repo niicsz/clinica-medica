@@ -1,0 +1,445 @@
+openapi: 3.0.3
+info:
+  title: Clinica Médica API
+  version: 1.0.0
+  description: API da clínica médica com autenticação JWT.
+servers:
+  - url: http://localhost:8080
+    description: Servidor local
+paths:
+  /api/auth/login:
+    post:
+      summary: Autentica um usuário e retorna o token JWT.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Autenticado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Credenciais inválidas.
+  /api/usuarios:
+    post:
+      summary: Cadastra um novo usuário.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '200':
+          description: Usuário cadastrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Dados inválidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Lista todos os usuários.
+      responses:
+        '200':
+          description: Lista de usuários.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+  /api/usuarios/{id}:
+    get:
+      summary: Busca usuário pelo identificador.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Usuário encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '404':
+          description: Usuário não encontrado.
+    put:
+      summary: Atualiza um usuário existente.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '200':
+          description: Usuário atualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+    delete:
+      summary: Remove um usuário.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '204':
+          description: Usuário removido com sucesso.
+  /api/pacientes:
+    post:
+      summary: Cadastra um novo paciente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Paciente'
+      responses:
+        '200':
+          description: Paciente cadastrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paciente'
+    get:
+      summary: Lista todos os pacientes.
+      responses:
+        '200':
+          description: Lista de pacientes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Paciente'
+  /api/pacientes/{id}:
+    get:
+      summary: Busca paciente pelo identificador.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Paciente encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paciente'
+        '404':
+          description: Paciente não encontrado.
+    put:
+      summary: Atualiza um paciente.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Paciente'
+      responses:
+        '200':
+          description: Paciente atualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paciente'
+    delete:
+      summary: Remove um paciente.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '204':
+          description: Paciente removido com sucesso.
+  /api/pacientes/cpf/{cpf}:
+    get:
+      summary: Busca paciente pelo CPF.
+      parameters:
+        - name: cpf
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^\\d{11}$'
+      responses:
+        '200':
+          description: Paciente encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paciente'
+        '404':
+          description: Paciente não encontrado.
+  /api/medicos:
+    post:
+      summary: Cadastra um novo médico.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Medico'
+      responses:
+        '200':
+          description: Médico cadastrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medico'
+    get:
+      summary: Lista todos os médicos.
+      responses:
+        '200':
+          description: Lista de médicos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Medico'
+  /api/medicos/{id}:
+    get:
+      summary: Busca médico pelo identificador.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Médico encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medico'
+        '404':
+          description: Médico não encontrado.
+    put:
+      summary: Atualiza um médico.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Medico'
+      responses:
+        '200':
+          description: Médico atualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medico'
+    delete:
+      summary: Remove um médico.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '204':
+          description: Médico removido com sucesso.
+  /api/consultas:
+    post:
+      summary: Agenda uma nova consulta.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Consulta'
+      responses:
+        '200':
+          description: Consulta agendada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consulta'
+    get:
+      summary: Lista todas as consultas.
+      responses:
+        '200':
+          description: Lista de consultas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Consulta'
+  /api/consultas/{id}:
+    get:
+      summary: Busca consulta pelo identificador.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Consulta encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consulta'
+        '404':
+          description: Consulta não encontrada.
+    put:
+      summary: Atualiza uma consulta.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Consulta'
+      responses:
+        '200':
+          description: Consulta atualizada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consulta'
+    delete:
+      summary: Remove uma consulta.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '204':
+          description: Consulta removida com sucesso.
+components:
+  parameters:
+    IdPathParameter:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - senha
+      properties:
+        email:
+          type: string
+          format: email
+        senha:
+          type: string
+    AuthResponse:
+      type: object
+      required:
+        - token
+        - expiresAt
+        - tokenType
+        - user
+      properties:
+        token:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        tokenType:
+          type: string
+        user:
+          $ref: '#/components/schemas/UsuarioResumo'
+    UsuarioResumo:
+      type: object
+      required:
+        - id
+        - nome
+        - email
+        - roles
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        email:
+          type: string
+          format: email
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - ADMIN
+              - MEDICO
+              - RECEPCIONISTA
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        cpf:
+          type: string
+        idade:
+          type: integer
+          format: int32
+        email:
+          type: string
+          format: email
+        senha:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - ADMIN
+              - MEDICO
+              - RECEPCIONISTA
+    Paciente:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        cpf:
+          type: string
+        idade:
+          type: integer
+          format: int32
+        email:
+          type: string
+          format: email
+    Medico:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        especialidade:
+          type: string
+    Consulta:
+      type: object
+      properties:
+        id:
+          type: string
+        paciente:
+          $ref: '#/components/schemas/Paciente'
+        medico:
+          $ref: '#/components/schemas/Medico'
+        dataHora:
+          type: string
+          format: date-time
+        tipoConsulta:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
