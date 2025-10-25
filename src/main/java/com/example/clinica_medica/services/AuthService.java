@@ -7,8 +7,8 @@ import com.example.clinica_medica.security.UsuarioDetails;
 import com.example.clinica_medica.security.UserRole;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,23 +46,24 @@ public class AuthService {
             jwtToken.value(),
             jwtToken.expiresAt(),
             "Bearer",
-            new UsuarioResumo(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getRoles()));
+            new UsuarioResumo(
+                usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getRoles()));
 
     return new AuthResult(response, cookie);
   }
 
   public AuthResult register(RegistrationData registrationData) {
     Usuario usuario = new Usuario();
-    usuario.setNome(registrationData.nome());
-    usuario.setCpf(registrationData.cpf());
-    usuario.setIdade(registrationData.idade());
-    usuario.setEmail(registrationData.email());
-    usuario.setSenha(registrationData.senha());
-    usuario.setRoles(normalizeRoles(registrationData.roles()));
+    usuario.setNome(registrationData.getNome());
+    usuario.setCpf(registrationData.getCpf());
+    usuario.setIdade(registrationData.getIdade());
+    usuario.setEmail(registrationData.getEmail());
+    usuario.setSenha(registrationData.getSenha());
+    usuario.setRoles(normalizeRoles(registrationData.getRoles()));
 
     usuarioService.incluirUsuario(usuario);
 
-    return authenticate(registrationData.email(), registrationData.senha());
+    return authenticate(registrationData.getEmail(), registrationData.getSenha());
   }
 
   public ResponseCookie logoutCookie() {
@@ -85,17 +86,6 @@ public class AuthService {
         .maxAge(maxAge)
         .build();
   }
-
-  public record AuthResult(AuthResponse response, ResponseCookie cookie) {}
-
-  public record AuthResponse(
-      String token, Instant expiresAt, String tokenType, UsuarioResumo user) {}
-
-  public record UsuarioResumo(
-      String id, String nome, String email, Set<UserRole> roles) {}
-
-  public record RegistrationData(
-      String nome, String cpf, Integer idade, String email, String senha, Set<UserRole> roles) {}
 
   private Set<UserRole> normalizeRoles(Set<UserRole> roles) {
     if (roles == null || roles.isEmpty()) {

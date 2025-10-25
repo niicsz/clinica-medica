@@ -2,7 +2,7 @@ package com.example.clinica_medica.generated.api;
 
 import com.example.clinica_medica.generated.model.LoginRequest;
 import com.example.clinica_medica.generated.model.RegisterRequest;
-import com.example.clinica_medica.services.AuthService.AuthResponse;
+import com.example.clinica_medica.services.AuthResponse;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
