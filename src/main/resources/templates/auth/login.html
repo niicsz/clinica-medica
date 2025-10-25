@@ -6,29 +6,149 @@
 </head>
 <body>
 <section class="row justify-content-center">
-  <div class="col-lg-5 col-md-7">
-    <div class="card shadow-sm">
-      <div class="card-body p-4">
-        <h2 class="mb-4 text-center">Acessar o sistema</h2>
-        <form th:action="@{/auth/login}" th:object="${loginForm}" method="post">
-          <div class="mb-3">
-            <label for="email" class="form-label">E-mail</label>
-            <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="seu@email.com" required>
-            <div class="text-danger mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-          </div>
+  <div class="col-12 col-xl-10">
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-body p-4">
+            <h2 class="mb-4 text-center">Acessar o sistema</h2>
+            <form th:action="@{/auth/login}" th:object="${loginForm}" method="post" novalidate>
+              <div class="mb-3">
+                <label for="email" class="form-label">E-mail</label>
+                <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    th:field="*{email}"
+                    placeholder="seu@email.com"
+                    th:classappend="${#fields.hasErrors('email')} ? ' is-invalid' : ''"
+                    required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+              </div>
 
-          <div class="mb-3">
-            <label for="senha" class="form-label">Senha</label>
-            <input type="password" class="form-control" id="senha" th:field="*{senha}" placeholder="••••••" required>
-            <div class="text-danger mt-1" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
-          </div>
+              <div class="mb-3">
+                <label for="senha" class="form-label">Senha</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="senha"
+                    th:field="*{senha}"
+                    placeholder="••••••"
+                    th:classappend="${#fields.hasErrors('senha')} ? ' is-invalid' : ''"
+                    required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
+              </div>
 
-          <div class="text-danger mb-3" th:if="${#fields.hasGlobalErrors()}">
-            <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
-          </div>
+              <div class="text-danger mb-3" th:if="${#fields.hasGlobalErrors()}">
+                <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
+              </div>
 
-          <button type="submit" class="btn btn-primary w-100">Entrar</button>
-        </form>
+              <button type="submit" class="btn btn-primary w-100">Entrar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-body p-4">
+            <h2 class="mb-4 text-center">Criar uma conta</h2>
+            <p class="text-muted text-center mb-4">
+              Cadastre-se para receber um acesso personalizado de acordo com o seu perfil.
+            </p>
+            <form th:action="@{/auth/register}" th:object="${registerForm}" method="post" novalidate>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="nome" class="form-label">Nome completo</label>
+                  <input
+                      type="text"
+                      id="nome"
+                      class="form-control"
+                      th:field="*{nome}"
+                      placeholder="Seu nome"
+                      th:classappend="${#fields.hasErrors('nome')} ? ' is-invalid' : ''"
+                      required>
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="cpf" class="form-label">CPF</label>
+                  <input
+                      type="text"
+                      id="cpf"
+                      class="form-control"
+                      th:field="*{cpf}"
+                      maxlength="11"
+                      placeholder="Apenas números"
+                      th:classappend="${#fields.hasErrors('cpf')} ? ' is-invalid' : ''"
+                      required>
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="idade" class="form-label">Idade</label>
+                  <input
+                      type="number"
+                      id="idade"
+                      class="form-control"
+                      th:field="*{idade}"
+                      min="0"
+                      th:classappend="${#fields.hasErrors('idade')} ? ' is-invalid' : ''"
+                      required>
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('idade')}" th:errors="*{idade}"></div>
+                </div>
+
+                <div class="col-12">
+                  <label for="emailCadastro" class="form-label">E-mail</label>
+                  <input
+                      type="email"
+                      id="emailCadastro"
+                      class="form-control"
+                      th:field="*{email}"
+                      placeholder="seu@email.com"
+                      th:classappend="${#fields.hasErrors('email')} ? ' is-invalid' : ''"
+                      required>
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="col-12">
+                  <label for="senhaCadastro" class="form-label">Senha</label>
+                  <input
+                      type="password"
+                      id="senhaCadastro"
+                      class="form-control"
+                      th:field="*{senha}"
+                      placeholder="Mínimo de 6 caracteres"
+                      th:classappend="${#fields.hasErrors('senha')} ? ' is-invalid' : ''"
+                      required>
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
+                </div>
+
+                <div class="col-12">
+                  <label for="roles" class="form-label">Perfil de acesso</label>
+                  <select
+                      id="roles"
+                      class="form-select"
+                      th:field="*{roles}"
+                      multiple
+                      size="3"
+                      th:classappend="${#fields.hasErrors('roles')} ? ' is-invalid' : ''"
+                      required>
+                    <option th:each="role : ${rolesDisponiveis}" th:value="${role}" th:text="${role}"></option>
+                  </select>
+                  <small class="text-muted">Selecione um ou mais perfis disponíveis.</small>
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}"></div>
+                </div>
+              </div>
+
+              <div class="text-danger mt-3" th:if="${#fields.hasGlobalErrors()}">
+                <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
+              </div>
+
+              <button type="submit" class="btn btn-success w-100 mt-4">Criar conta e entrar</button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>

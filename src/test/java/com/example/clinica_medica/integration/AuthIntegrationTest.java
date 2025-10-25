@@ -73,6 +73,37 @@ class AuthIntegrationTest {
   }
 
   @Test
+  void shouldRegisterUserAndReturnJwtAndCookie() throws Exception {
+    String newEmail = "novo.usuario@test.com";
+
+    JsonNode requestBody =
+        objectMapper
+            .createObjectNode()
+            .put("nome", "Novo Usuário")
+            .put("cpf", "55566677788")
+            .put("idade", 29)
+            .put("email", newEmail)
+            .put("senha", "SenhaNova123")
+            .set("roles", objectMapper.createArrayNode().add("RECEPCIONISTA"));
+
+    MvcResult result =
+        mockMvc
+            .perform(
+                post("/api/auth/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody.toString()))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.user.email").value(newEmail))
+            .andExpect(header().string(HttpHeaders.SET_COOKIE, org.hamcrest.Matchers.containsString("jwt-token=")))
+            .andReturn();
+
+    JsonNode responseBody = objectMapper.readTree(result.getResponse().getContentAsString());
+    assertThat(responseBody.get("token").asText()).isNotBlank();
+
+    assertThat(usuarioRepository.findByEmail(newEmail)).isPresent();
+  }
+
+  @Test
   void shouldPreventAccessWithoutToken() throws Exception {
     mockMvc.perform(get("/api/usuarios")).andExpect(status().isUnauthorized());
   }

@@ -25,6 +25,26 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
           description: Credenciais inválidas.
+  /api/auth/register:
+    post:
+      summary: Registra um novo usuário e retorna o token JWT.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Usuário registrado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Dados inválidos.
+        '409':
+          description: Já existe usuário com as mesmas credenciais.
   /api/usuarios:
     post:
       summary: Cadastra um novo usuário.
@@ -330,6 +350,39 @@ components:
           format: email
         senha:
           type: string
+    RegisterRequest:
+      type: object
+      required:
+        - nome
+        - cpf
+        - idade
+        - email
+        - senha
+      properties:
+        nome:
+          type: string
+        cpf:
+          type: string
+          description: 11 dígitos numéricos
+        idade:
+          type: integer
+          format: int32
+          minimum: 0
+        email:
+          type: string
+          format: email
+        senha:
+          type: string
+          format: password
+        roles:
+          type: array
+          description: Perfis de acesso a serem associados ao usuário
+          items:
+            type: string
+            enum:
+              - ADMIN
+              - MEDICO
+              - RECEPCIONISTA
     AuthResponse:
       type: object
       required:

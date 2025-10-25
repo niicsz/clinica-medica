@@ -8,6 +8,7 @@ import com.example.clinica_medica.security.UserRole;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
+import java.util.HashSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +25,8 @@ public class AuthService {
   @Autowired private AuthenticationManager authenticationManager;
 
   @Autowired private JwtService jwtService;
+
+  @Autowired private UsuarioService usuarioService;
 
   public AuthResult authenticate(String email, String senha) {
     Authentication authentication =
@@ -46,6 +49,20 @@ public class AuthService {
             new UsuarioResumo(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getRoles()));
 
     return new AuthResult(response, cookie);
+  }
+
+  public AuthResult register(RegistrationData registrationData) {
+    Usuario usuario = new Usuario();
+    usuario.setNome(registrationData.nome());
+    usuario.setCpf(registrationData.cpf());
+    usuario.setIdade(registrationData.idade());
+    usuario.setEmail(registrationData.email());
+    usuario.setSenha(registrationData.senha());
+    usuario.setRoles(normalizeRoles(registrationData.roles()));
+
+    usuarioService.incluirUsuario(usuario);
+
+    return authenticate(registrationData.email(), registrationData.senha());
   }
 
   public ResponseCookie logoutCookie() {
@@ -76,4 +93,15 @@ public class AuthService {
 
   public record UsuarioResumo(
       String id, String nome, String email, Set<UserRole> roles) {}
+
+  public record RegistrationData(
+      String nome, String cpf, Integer idade, String email, String senha, Set<UserRole> roles) {}
+
+  private Set<UserRole> normalizeRoles(Set<UserRole> roles) {
+    if (roles == null || roles.isEmpty()) {
+      return Set.of(UserRole.RECEPCIONISTA);
+    }
+
+    return new HashSet<>(roles);
+  }
 }
