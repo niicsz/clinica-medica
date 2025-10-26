@@ -14,7 +14,10 @@ public record RegisterRequest(
     @NotBlank(message = "CPF é obrigatório")
         @Size(min = 11, max = 11, message = "CPF deve conter 11 dígitos")
         String cpf,
-    @NotNull(message = "Idade é obrigatória") @Min(value = 0, message = "Idade deve ser positiva") Integer idade,
+    @NotNull(message = "Idade é obrigatória") @Min(value = 0, message = "Idade deve ser positiva")
+        Integer idade,
     @Email(message = "Email inválido") @NotBlank(message = "Email é obrigatório") String email,
-    @NotBlank(message = "Senha é obrigatória") @Size(min = 6, message = "Senha deve ter pelo menos 6 caracteres") String senha,
+    @NotBlank(message = "Senha é obrigatória")
+        @Size(min = 6, message = "Senha deve ter pelo menos 6 caracteres")
+        String senha,
     Set<String> roles) {}

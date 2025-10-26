@@ -5,7 +5,29 @@ spring:
     mongodb:
       database: clinica-medica
       uri: mongodb+srv://pusrclinica:RockANDRoll@cluster0.txmiuke.mongodb.net/
+
 security:
   jwt:
     secret: 0123456789ABCDEF0123456789ABCDEF
     expiration: PT2H
+
+logging:
+  level:
+    root: INFO
+    com.example.clinica_medica: DEBUG
+    com.example.clinica_medica.controller: INFO
+    com.example.clinica_medica.services: INFO
+    com.example.clinica_medica.security: DEBUG
+    com.example.clinica_medica.exceptions: WARN
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+    org.mongodb.driver: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/clinica-medica.log
+    max-size: 10MB
+    max-history: 30
+
+

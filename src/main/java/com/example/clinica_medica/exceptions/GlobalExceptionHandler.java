@@ -1,6 +1,8 @@
 package com.example.clinica_medica.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -12,9 +14,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+  private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
   @ExceptionHandler(IllegalArgumentException.class)
   public Object handleIllegalArgument(
       IllegalArgumentException ex, HttpServletRequest request, RedirectAttributes attributes) {
+    logger.warn(
+        "IllegalArgumentException capturada: {} - URI: {}",
+        ex.getMessage(),
+        request.getRequestURI());
+
     if (request.getRequestURI().startsWith("/api")) {
       return ResponseEntity.badRequest().body(ex.getMessage());
     }
@@ -26,6 +35,11 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(value = {DataIntegrityViolationException.class})
   public ResponseEntity<Object> handleDataIntegrityViolation(
       Exception ex, HttpServletRequest request) {
+    logger.error(
+        "DataIntegrityViolationException capturada - URI: {} - Erro: {}",
+        request.getRequestURI(),
+        ex.getMessage());
+
     if (request.getRequestURI().startsWith("/api")) {
       String message =
           "Não é possível excluir este registro porque está sendo usado em outro local.";
@@ -38,6 +52,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(value = {RuntimeException.class})
   public String handleRuntimeException(
       RuntimeException ex, RedirectAttributes attributes, HttpServletRequest request) {
+    logger.error(
+        "RuntimeException capturada - URI: {} - Erro: {}",
+        request.getRequestURI(),
+        ex.getMessage(),
+        ex);
+
     if (!request.getRequestURI().startsWith("/api")) {
       String mensagemErro;
 

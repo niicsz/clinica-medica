@@ -15,7 +15,8 @@ public class UsuarioResumo {
     this.id = id;
     this.nome = nome;
     this.email = email;
-    this.roles = roles == null ? Collections.emptySet() : Collections.unmodifiableSet(new HashSet<>(roles));
+    this.roles =
+        roles == null ? Collections.emptySet() : Collections.unmodifiableSet(new HashSet<>(roles));
   }
 
   public String getId() {

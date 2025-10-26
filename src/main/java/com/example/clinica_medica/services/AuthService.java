@@ -3,12 +3,14 @@ package com.example.clinica_medica.services;
 import com.example.clinica_medica.entities.Usuario;
 import com.example.clinica_medica.security.JwtService;
 import com.example.clinica_medica.security.JwtToken;
-import com.example.clinica_medica.security.UsuarioDetails;
 import com.example.clinica_medica.security.UserRole;
+import com.example.clinica_medica.security.UsuarioDetails;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
+  private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
   private static final String TOKEN_COOKIE_NAME = "jwt-token";
 
   @Autowired private AuthenticationManager authenticationManager;
@@ -29,41 +33,68 @@ public class AuthService {
   @Autowired private UsuarioService usuarioService;
 
   public AuthResult authenticate(String email, String senha) {
-    Authentication authentication =
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(email, senha));
+    logger.info("Tentativa de autenticação para o email: {}", email);
 
-    if (!(authentication.getPrincipal() instanceof UsuarioDetails principal)) {
-      throw new UsernameNotFoundException("Usuário não encontrado");
+    try {
+      Authentication authentication =
+          authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, senha));
+
+      if (!(authentication.getPrincipal() instanceof UsuarioDetails principal)) {
+        logger.error(
+            "Falha na autenticação: Principal não é uma instância de UsuarioDetails para email: {}",
+            email);
+        throw new UsernameNotFoundException("Usuário não encontrado");
+      }
+
+      JwtToken jwtToken = jwtService.generateToken(principal);
+      Usuario usuario = principal.getUsuario();
+      ResponseCookie cookie = buildAuthCookie(jwtToken);
+
+      AuthResponse response =
+          new AuthResponse(
+              jwtToken.value(),
+              jwtToken.expiresAt(),
+              "Bearer",
+              new UsuarioResumo(
+                  usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getRoles()));
+
+      logger.info("Autenticação bem-sucedida para o usuário: {} (ID: {})", email, usuario.getId());
+      return new AuthResult(response, cookie);
+    } catch (Exception e) {
+      logger.error("Erro durante autenticação para email: {} - Erro: {}", email, e.getMessage());
+      throw e;
     }
-
-    JwtToken jwtToken = jwtService.generateToken(principal);
-    Usuario usuario = principal.getUsuario();
-    ResponseCookie cookie = buildAuthCookie(jwtToken);
-
-    AuthResponse response =
-        new AuthResponse(
-            jwtToken.value(),
-            jwtToken.expiresAt(),
-            "Bearer",
-            new UsuarioResumo(
-                usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getRoles()));
-
-    return new AuthResult(response, cookie);
   }
 
   public AuthResult register(RegistrationData registrationData) {
-    Usuario usuario = new Usuario();
-    usuario.setNome(registrationData.getNome());
-    usuario.setCpf(registrationData.getCpf());
-    usuario.setIdade(registrationData.getIdade());
-    usuario.setEmail(registrationData.getEmail());
-    usuario.setSenha(registrationData.getSenha());
-    usuario.setRoles(normalizeRoles(registrationData.getRoles()));
+    logger.info(
+        "Tentativa de registro para o email: {} com nome: {}",
+        registrationData.getEmail(),
+        registrationData.getNome());
 
-    usuarioService.incluirUsuario(usuario);
+    try {
+      Usuario usuario = new Usuario();
+      usuario.setNome(registrationData.getNome());
+      usuario.setCpf(registrationData.getCpf());
+      usuario.setIdade(registrationData.getIdade());
+      usuario.setEmail(registrationData.getEmail());
+      usuario.setSenha(registrationData.getSenha());
+      usuario.setRoles(normalizeRoles(registrationData.getRoles()));
 
-    return authenticate(registrationData.getEmail(), registrationData.getSenha());
+      usuarioService.incluirUsuario(usuario);
+      logger.info(
+          "Usuário registrado com sucesso: {} (CPF: {})",
+          registrationData.getEmail(),
+          registrationData.getCpf());
+
+      return authenticate(registrationData.getEmail(), registrationData.getSenha());
+    } catch (Exception e) {
+      logger.error(
+          "Erro durante registro do usuário {} - Erro: {}",
+          registrationData.getEmail(),
+          e.getMessage());
+      throw e;
+    }
   }
 
   public ResponseCookie logoutCookie() {

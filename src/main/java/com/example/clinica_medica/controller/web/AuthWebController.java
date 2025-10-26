@@ -105,7 +105,10 @@ public class AuthWebController {
       AuthResult authResult = authService.register(registrationData);
       response.addHeader(HttpHeaders.SET_COOKIE, authResult.getCookie().toString());
       attributes.addFlashAttribute(
-          "mensagem", "Conta criada com sucesso! Bem-vindo, " + authResult.getResponse().getUser().getNome() + "!");
+          "mensagem",
+          "Conta criada com sucesso! Bem-vindo, "
+              + authResult.getResponse().getUser().getNome()
+              + "!");
       return "redirect:/";
     } catch (DuplicateKeyException ex) {
       result.reject("usuario.duplicado", "Já existe um usuário com o mesmo CPF ou e-mail.");
@@ -138,7 +141,8 @@ public class AuthWebController {
     @NotBlank(message = "Email é obrigatório")
     private String email;
 
-    @NotBlank(message = "Senha é obrigatória") private String senha;
+    @NotBlank(message = "Senha é obrigatória")
+    private String senha;
 
     public String getEmail() {
       return email;
