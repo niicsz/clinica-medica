@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -28,6 +29,29 @@ public class GlobalExceptionHandler {
       return ResponseEntity.badRequest().body(ex.getMessage());
     }
     attributes.addFlashAttribute("mensagemErro", ex.getMessage());
+    String referer = request.getHeader("Referer");
+    return "redirect:" + (referer != null ? referer : "/");
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public Object handleHttpMessageNotReadable(
+      HttpMessageNotReadableException ex,
+      HttpServletRequest request,
+      RedirectAttributes attributes) {
+    logger.error(
+        "HttpMessageNotReadableException capturada - URI: {} - Erro: {}",
+        request.getRequestURI(),
+        ex.getOriginalMessage());
+
+    if (request.getRequestURI().startsWith("/api")) {
+      String message =
+          "Corpo da requisição inválido. Verifique o JSON enviado e tente novamente.";
+      return ResponseEntity.badRequest().body(message);
+    }
+
+    attributes.addFlashAttribute(
+        "mensagemErro",
+        "Não foi possível processar os dados enviados. Verifique as informações e tente novamente.");
     String referer = request.getHeader("Referer");
     return "redirect:" + (referer != null ? referer : "/");
   }
