@@ -20,7 +20,8 @@ public class RegistrationData {
     this.idade = idade;
     this.email = email;
     this.senha = senha;
-    this.roles = roles == null ? Collections.emptySet() : Collections.unmodifiableSet(new HashSet<>(roles));
+    this.roles =
+        roles == null ? Collections.emptySet() : Collections.unmodifiableSet(new HashSet<>(roles));
   }
 
   public String getNome() {

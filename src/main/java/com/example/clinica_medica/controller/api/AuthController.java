@@ -4,14 +4,16 @@ import com.example.clinica_medica.generated.api.AuthApi;
 import com.example.clinica_medica.generated.model.LoginRequest;
 import com.example.clinica_medica.generated.model.RegisterRequest;
 import com.example.clinica_medica.security.UserRole;
-import com.example.clinica_medica.services.AuthResult;
 import com.example.clinica_medica.services.AuthResponse;
+import com.example.clinica_medica.services.AuthResult;
 import com.example.clinica_medica.services.AuthService;
 import com.example.clinica_medica.services.RegistrationData;
 import jakarta.validation.Valid;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
@@ -25,22 +27,37 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController implements AuthApi {
 
+  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
   @Autowired private AuthService authService;
 
   @Override
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    logger.info("Requisição de login recebida para email: {}", request.email());
     try {
       AuthResult result = authService.authenticate(request.email(), request.senha());
+      logger.info("Login bem-sucedido para email: {}", request.email());
       return ResponseEntity.ok()
           .header(HttpHeaders.SET_COOKIE, result.getCookie().toString())
           .body(result.getResponse());
     } catch (BadCredentialsException ex) {
+      logger.warn("Falha no login - Credenciais inválidas para email: {}", request.email());
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    } catch (Exception ex) {
+      logger.error(
+          "Erro inesperado durante login para email: {} - Erro: {}",
+          request.email(),
+          ex.getMessage());
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
   }
 
   @Override
   public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+    logger.info(
+        "Requisição de registro recebida para email: {} (Nome: {})",
+        request.email(),
+        request.nome());
     try {
       Set<UserRole> roles = resolveRoles(request.roles());
       RegistrationData registrationData =
@@ -53,15 +70,28 @@ public class AuthController implements AuthApi {
               roles);
 
       AuthResult result = authService.register(registrationData);
+      logger.info("Registro bem-sucedido para email: {}", request.email());
       return ResponseEntity.status(HttpStatus.CREATED)
           .header(HttpHeaders.SET_COOKIE, result.getCookie().toString())
           .body(result.getResponse());
     } catch (DuplicateKeyException ex) {
+      logger.warn("Falha no registro - Email ou CPF duplicado: {}", request.email());
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
     } catch (DataIntegrityViolationException ex) {
+      logger.warn("Falha no registro - Violação de integridade de dados: {}", request.email());
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
     } catch (IllegalArgumentException ex) {
+      logger.warn(
+          "Falha no registro - Argumentos inválidos para email: {} - Erro: {}",
+          request.email(),
+          ex.getMessage());
       return ResponseEntity.badRequest().build();
+    } catch (Exception ex) {
+      logger.error(
+          "Erro inesperado durante registro para email: {} - Erro: {}",
+          request.email(),
+          ex.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 

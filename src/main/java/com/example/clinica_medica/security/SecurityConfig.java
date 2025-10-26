@@ -24,7 +24,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private static final String[] PUBLIC_ENDPOINTS = {
-    "/", "/auth/login", "/auth/logout", "/api/auth/login", "/css/**", "/js/**", "/images/**", "/webjars/**"
+    "/",
+    "/auth/login",
+    "/auth/logout",
+    "/auth/register",
+    "/api/auth/login",
+    "/api/auth/register",
+    "/css/**",
+    "/js/**",
+    "/images/**",
+    "/webjars/**"
   };
 
   @Autowired private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -33,14 +42,13 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
+    http.csrf(csrf -> csrf.disable())
         .cors(cors -> {})
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth
-                    .requestMatchers(PUBLIC_ENDPOINTS)
+                auth.requestMatchers(PUBLIC_ENDPOINTS)
                     .permitAll()
                     .requestMatchers("/usuarios/**", "/api/usuarios/**")
                     .hasRole("ADMIN")
@@ -52,7 +60,8 @@ public class SecurityConfig {
                     .hasAnyRole("ADMIN", "RECEPCIONISTA", "MEDICO")
                     .anyRequest()
                     .authenticated())
-        .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
+        .exceptionHandling(
+            ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
     http.authenticationProvider(authenticationProvider());
     http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

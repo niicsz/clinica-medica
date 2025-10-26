@@ -50,8 +50,7 @@ public class WebConsultaController {
 
     try {
       if (consulta.getPaciente() != null && consulta.getPaciente().getId() != null) {
-        consulta.setPaciente(
-            pacienteService.buscarPacientePorId(consulta.getPaciente().getId()));
+        consulta.setPaciente(pacienteService.buscarPacientePorId(consulta.getPaciente().getId()));
       }
       if (consulta.getMedico() != null && consulta.getMedico().getId() != null) {
         consulta.setMedico(medicoService.buscarMedicoPorId(consulta.getMedico().getId()));

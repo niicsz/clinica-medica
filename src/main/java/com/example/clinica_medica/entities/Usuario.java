@@ -41,4 +41,6 @@ public class Usuario {
   private String senha;
 
   private Set<UserRole> roles = new HashSet<>();
+
+  public void setNome(String administradorTeste) {}
 }

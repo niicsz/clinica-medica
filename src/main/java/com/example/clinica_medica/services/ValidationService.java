@@ -82,7 +82,9 @@ public class ValidationService {
         throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres");
       }
     } else {
-      if (usuario.getSenha() != null && !usuario.getSenha().isBlank() && usuario.getSenha().length() < 6) {
+      if (usuario.getSenha() != null
+          && !usuario.getSenha().isBlank()
+          && usuario.getSenha().length() < 6) {
         throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres");
       }
     }
