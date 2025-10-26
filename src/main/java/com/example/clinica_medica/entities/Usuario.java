@@ -42,5 +42,7 @@ public class Usuario {
 
   private Set<UserRole> roles = new HashSet<>();
 
-  public void setNome(String administradorTeste) {}
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
 }
