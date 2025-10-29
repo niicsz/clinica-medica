@@ -1,20 +1,19 @@
 package com.example.clinica_medica.controller.api;
 
+import com.example.clinica_medica.application.dto.AuthResponse;
+import com.example.clinica_medica.application.dto.AuthResult;
+import com.example.clinica_medica.application.dto.RegistrationData;
+import com.example.clinica_medica.application.port.in.AuthUseCase;
 import com.example.clinica_medica.generated.api.AuthApi;
 import com.example.clinica_medica.generated.model.LoginRequest;
 import com.example.clinica_medica.generated.model.RegisterRequest;
 import com.example.clinica_medica.security.UserRole;
-import com.example.clinica_medica.services.AuthResponse;
-import com.example.clinica_medica.services.AuthResult;
-import com.example.clinica_medica.services.AuthService;
-import com.example.clinica_medica.services.RegistrationData;
 import jakarta.validation.Valid;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
@@ -29,13 +28,17 @@ public class AuthController implements AuthApi {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-  @Autowired private AuthService authService;
+  private final AuthUseCase authUseCase;
+
+  public AuthController(AuthUseCase authUseCase) {
+    this.authUseCase = authUseCase;
+  }
 
   @Override
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
     logger.info("Requisição de login recebida para email: {}", request.email());
     try {
-      AuthResult result = authService.authenticate(request.email(), request.senha());
+      AuthResult result = authUseCase.authenticate(request.email(), request.senha());
       logger.info("Login bem-sucedido para email: {}", request.email());
       return ResponseEntity.ok()
           .header(HttpHeaders.SET_COOKIE, result.getCookie().toString())
@@ -69,7 +72,7 @@ public class AuthController implements AuthApi {
               request.senha(),
               roles);
 
-      AuthResult result = authService.register(registrationData);
+      AuthResult result = authUseCase.register(registrationData);
       logger.info("Registro bem-sucedido para email: {}", request.email());
       return ResponseEntity.status(HttpStatus.CREATED)
           .header(HttpHeaders.SET_COOKIE, result.getCookie().toString())

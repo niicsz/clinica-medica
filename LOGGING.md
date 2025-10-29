@@ -13,7 +13,7 @@ Os níveis de log estão configurados no arquivo `application.yml`:
 - **Root**: INFO
 - **com.example.clinica_medica**: DEBUG
 - **com.example.clinica_medica.controller**: INFO
-- **com.example.clinica_medica.services**: INFO
+- **com.example.clinica_medica.application**: INFO
 - **com.example.clinica_medica.security**: DEBUG
 - **com.example.clinica_medica.exceptions**: WARN
 - **org.springframework.web**: INFO
@@ -63,7 +63,7 @@ Exemplo:
 - WARN: Dados duplicados ou inválidos
 - ERROR: Erros inesperados
 
-### 3. Serviços (UsuarioService, PacienteService, MedicoService, ConsultaService)
+### 3. Serviços de Aplicação (UsuarioService, PacienteService, MedicoService, ConsultaService)
 
 **Operações CRUD:**
 - INFO: Inclusão, atualização e exclusão de registros

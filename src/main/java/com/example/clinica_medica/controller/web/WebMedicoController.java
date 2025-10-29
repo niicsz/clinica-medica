@@ -1,34 +1,38 @@
 package com.example.clinica_medica.controller.web;
 
-import com.example.clinica_medica.entities.Medico;
-import com.example.clinica_medica.services.MedicoService;
+import com.example.clinica_medica.application.port.in.MedicoUseCase;
+import com.example.clinica_medica.domain.model.Medico;
+import com.example.clinica_medica.generated.web.WebMedicoApi;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/medicos")
-public class WebMedicoController {
+public class WebMedicoController implements WebMedicoApi {
 
-  @Autowired private MedicoService medicoService;
+  private final MedicoUseCase medicoUseCase;
 
-  @GetMapping
+  public WebMedicoController(MedicoUseCase medicoUseCase) {
+    this.medicoUseCase = medicoUseCase;
+  }
+
+  @Override
   public String listarMedicos(Model model) {
-    model.addAttribute("medicos", medicoService.listarTodosMedicos());
+    model.addAttribute("medicos", medicoUseCase.listarTodosMedicos());
     return "medicos/lista";
   }
 
-  @GetMapping("/novo")
+  @Override
   public String formNovoMedico(Model model) {
     model.addAttribute("medico", new Medico());
     return "medicos/form";
   }
 
-  @PostMapping("/salvar")
+  @Override
   public String salvarMedico(
       @Valid @ModelAttribute("medico") Medico medico,
       BindingResult result,
@@ -39,10 +43,10 @@ public class WebMedicoController {
 
     try {
       if (medico.getId() == null) {
-        medicoService.incluirMedico(medico);
+        medicoUseCase.incluirMedico(medico);
         attributes.addFlashAttribute("mensagem", "Médico cadastrado com sucesso!");
       } else {
-        medicoService.atualizarMedico(medico.getId(), medico);
+        medicoUseCase.atualizarMedico(medico.getId(), medico);
         attributes.addFlashAttribute("mensagem", "Médico atualizado com sucesso!");
       }
       return "redirect:/medicos";
@@ -54,9 +58,9 @@ public class WebMedicoController {
     }
   }
 
-  @GetMapping("/editar/{id}")
+  @Override
   public String formEditarMedico(@PathVariable String id, Model model) {
-    Medico medico = medicoService.buscarMedicoPorId(id);
+    Medico medico = medicoUseCase.buscarMedicoPorId(id);
     if (medico == null) {
       return "redirect:/medicos";
     }
@@ -64,10 +68,10 @@ public class WebMedicoController {
     return "medicos/form";
   }
 
-  @GetMapping("/excluir/{id}")
+  @Override
   public String excluirMedico(@PathVariable String id, RedirectAttributes attributes) {
     try {
-      medicoService.excluirMedico(id);
+      medicoUseCase.excluirMedico(id);
       attributes.addFlashAttribute("mensagem", "Médico excluído com sucesso!");
     } catch (Exception e) {
       attributes.addFlashAttribute("mensagemErro", "Erro ao excluir médico: " + e.getMessage());

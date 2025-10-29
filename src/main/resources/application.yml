@@ -16,7 +16,7 @@ logging:
     root: INFO
     com.example.clinica_medica: DEBUG
     com.example.clinica_medica.controller: INFO
-    com.example.clinica_medica.services: INFO
+    com.example.clinica_medica.application: INFO
     com.example.clinica_medica.security: DEBUG
     com.example.clinica_medica.exceptions: WARN
     org.springframework.web: INFO
