@@ -58,6 +58,10 @@ public class WebUsuarioController implements WebUsuarioApi {
     }
 
     try {
+      if (usuario.getId() != null && usuario.getId().trim().isEmpty()) {
+        usuario.setId(null);
+      }
+
       if (usuario.getId() == null) {
         usuarioUseCase.incluirUsuario(usuario);
         attributes.addFlashAttribute("mensagem", "Usuário cadastrado com sucesso!");

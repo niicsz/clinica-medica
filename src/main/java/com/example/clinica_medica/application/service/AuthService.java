@@ -49,8 +49,7 @@ public class AuthService implements AuthUseCase {
     logger.info("Tentativa de autenticação para o email: {}", email);
 
     Authentication authentication =
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(email, senha));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, senha));
 
     if (!(authentication.getPrincipal() instanceof UsuarioDetails principal)) {
       logger.error(

@@ -69,6 +69,10 @@ public class WebConsultaController implements WebConsultaApi {
         throw new IllegalArgumentException("Paciente e médico devem ser informados");
       }
 
+      if (consulta.getId() != null && consulta.getId().trim().isEmpty()) {
+        consulta.setId(null);
+      }
+
       if (consulta.getId() == null) {
         consultaUseCase.agendarConsulta(consulta);
         attributes.addFlashAttribute("mensagem", "Consulta agendada com sucesso!");

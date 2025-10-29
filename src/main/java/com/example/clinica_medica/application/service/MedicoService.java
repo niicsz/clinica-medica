@@ -16,8 +16,7 @@ public class MedicoService implements MedicoUseCase {
   private final MedicoRepositoryPort medicoRepository;
   private final ValidationService validationService;
 
-  public MedicoService(
-      MedicoRepositoryPort medicoRepository, ValidationService validationService) {
+  public MedicoService(MedicoRepositoryPort medicoRepository, ValidationService validationService) {
     this.medicoRepository = medicoRepository;
     this.validationService = validationService;
   }

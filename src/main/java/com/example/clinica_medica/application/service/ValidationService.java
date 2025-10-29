@@ -66,14 +66,16 @@ public class ValidationService {
       throw new IllegalArgumentException("Especialidade é obrigatória");
     }
 
-    medicoRepository
-        .findById(medico.getId())
-        .ifPresent(
-            existing -> {
-              if (!existing.getEspecialidade().equalsIgnoreCase(medico.getEspecialidade())) {
-                throw new IllegalArgumentException("Especialidade não pode ser alterada");
-              }
-            });
+    if (medico.getId() != null) {
+      medicoRepository
+          .findById(medico.getId())
+          .ifPresent(
+              existing -> {
+                if (!existing.getEspecialidade().equalsIgnoreCase(medico.getEspecialidade())) {
+                  throw new IllegalArgumentException("Especialidade não pode ser alterada");
+                }
+              });
+    }
   }
 
   public void validarUsuario(Usuario usuario) {

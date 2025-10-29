@@ -24,13 +24,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     logger.debug("Carregando detalhes do usuário: {}", username);
     return usuarioRepository
         .findByEmail(username)
-        .map(usuario -> {
-          logger.debug("Usuário encontrado: {} com roles: {}", username, usuario.getRoles());
-          return new UsuarioDetails(usuario);
-        })
-        .orElseThrow(() -> {
-          logger.warn("Usuário não encontrado: {}", username);
-          return new UsernameNotFoundException("Usuário não encontrado");
-        });
+        .map(
+            usuario -> {
+              logger.debug("Usuário encontrado: {} com roles: {}", username, usuario.getRoles());
+              return new UsuarioDetails(usuario);
+            })
+        .orElseThrow(
+            () -> {
+              logger.warn("Usuário não encontrado: {}", username);
+              return new UsernameNotFoundException("Usuário não encontrado");
+            });
   }
 }

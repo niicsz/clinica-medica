@@ -23,9 +23,7 @@ public class TestConfig {
   private final UsuarioUseCase usuarioUseCase;
 
   public TestConfig(
-      MedicoUseCase medicoUseCase,
-      PacienteUseCase pacienteUseCase,
-      UsuarioUseCase usuarioUseCase) {
+      MedicoUseCase medicoUseCase, PacienteUseCase pacienteUseCase, UsuarioUseCase usuarioUseCase) {
     this.medicoUseCase = medicoUseCase;
     this.pacienteUseCase = pacienteUseCase;
     this.usuarioUseCase = usuarioUseCase;

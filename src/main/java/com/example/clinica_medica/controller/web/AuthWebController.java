@@ -123,8 +123,7 @@ public class AuthWebController implements AuthWebApi {
   @Override
   public String logout(HttpServletResponse response, RedirectAttributes attributes) {
     response.addHeader(
-        org.springframework.http.HttpHeaders.SET_COOKIE,
-        authUseCase.logoutCookie().toString());
+        org.springframework.http.HttpHeaders.SET_COOKIE, authUseCase.logoutCookie().toString());
     attributes.addFlashAttribute("mensagem", "Sessão encerrada com sucesso.");
     return "redirect:/auth/login";
   }
