@@ -1,6 +1,6 @@
 package com.example.clinica_medica.security;
 
-import com.example.clinica_medica.entities.Usuario;
+import com.example.clinica_medica.domain.model.Usuario;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;

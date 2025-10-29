@@ -1,59 +1,68 @@
 package com.example.clinica_medica.controller.web;
 
-import com.example.clinica_medica.entities.Consulta;
-import com.example.clinica_medica.services.ConsultaService;
-import com.example.clinica_medica.services.MedicoService;
-import com.example.clinica_medica.services.PacienteService;
+import com.example.clinica_medica.application.port.in.ConsultaUseCase;
+import com.example.clinica_medica.application.port.in.MedicoUseCase;
+import com.example.clinica_medica.application.port.in.PacienteUseCase;
+import com.example.clinica_medica.domain.model.Consulta;
+import com.example.clinica_medica.generated.web.WebConsultaApi;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/consultas")
-public class WebConsultaController {
+public class WebConsultaController implements WebConsultaApi {
 
-  @Autowired private ConsultaService consultaService;
+  private final ConsultaUseCase consultaUseCase;
 
-  @Autowired private PacienteService pacienteService;
+  private final PacienteUseCase pacienteUseCase;
 
-  @Autowired private MedicoService medicoService;
+  private final MedicoUseCase medicoUseCase;
 
-  @GetMapping
+  public WebConsultaController(
+      ConsultaUseCase consultaUseCase,
+      PacienteUseCase pacienteUseCase,
+      MedicoUseCase medicoUseCase) {
+    this.consultaUseCase = consultaUseCase;
+    this.pacienteUseCase = pacienteUseCase;
+    this.medicoUseCase = medicoUseCase;
+  }
+
+  @Override
   public String listarConsultas(Model model) {
-    model.addAttribute("consultas", consultaService.listarTodasConsultas());
+    model.addAttribute("consultas", consultaUseCase.listarTodasConsultas());
     return "consultas/lista";
   }
 
-  @GetMapping("/nova")
+  @Override
   public String formNovaConsulta(Model model) {
     model.addAttribute("consulta", new Consulta());
-    model.addAttribute("pacientes", pacienteService.listarTodosPacientes());
-    model.addAttribute("medicos", medicoService.listarTodosMedicos());
+    model.addAttribute("pacientes", pacienteUseCase.listarTodosPacientes());
+    model.addAttribute("medicos", medicoUseCase.listarTodosMedicos());
     return "consultas/form";
   }
 
-  @PostMapping("/salvar")
+  @Override
   public String salvarConsulta(
       @Valid @ModelAttribute("consulta") Consulta consulta,
       BindingResult result,
       RedirectAttributes attributes,
       Model model) {
     if (result.hasErrors()) {
-      model.addAttribute("pacientes", pacienteService.listarTodosPacientes());
-      model.addAttribute("medicos", medicoService.listarTodosMedicos());
+      model.addAttribute("pacientes", pacienteUseCase.listarTodosPacientes());
+      model.addAttribute("medicos", medicoUseCase.listarTodosMedicos());
       return "consultas/form";
     }
 
     try {
       if (consulta.getPaciente() != null && consulta.getPaciente().getId() != null) {
-        consulta.setPaciente(pacienteService.buscarPacientePorId(consulta.getPaciente().getId()));
+        consulta.setPaciente(pacienteUseCase.buscarPacientePorId(consulta.getPaciente().getId()));
       }
       if (consulta.getMedico() != null && consulta.getMedico().getId() != null) {
-        consulta.setMedico(medicoService.buscarMedicoPorId(consulta.getMedico().getId()));
+        consulta.setMedico(medicoUseCase.buscarMedicoPorId(consulta.getMedico().getId()));
       }
 
       if (consulta.getPaciente() == null || consulta.getMedico() == null) {
@@ -61,10 +70,10 @@ public class WebConsultaController {
       }
 
       if (consulta.getId() == null) {
-        consultaService.agendarConsulta(consulta);
+        consultaUseCase.agendarConsulta(consulta);
         attributes.addFlashAttribute("mensagem", "Consulta agendada com sucesso!");
       } else {
-        consultaService.atualizarConsulta(consulta.getId(), consulta);
+        consultaUseCase.atualizarConsulta(consulta.getId(), consulta);
         attributes.addFlashAttribute("mensagem", "Consulta atualizada com sucesso!");
       }
       return "redirect:/consultas";
@@ -76,22 +85,22 @@ public class WebConsultaController {
     }
   }
 
-  @GetMapping("/editar/{id}")
+  @Override
   public String formEditarConsulta(@PathVariable String id, Model model) {
-    Consulta consulta = consultaService.buscarConsultaPorId(id);
+    Consulta consulta = consultaUseCase.buscarConsultaPorId(id);
     if (consulta == null) {
       return "redirect:/consultas";
     }
     model.addAttribute("consulta", consulta);
-    model.addAttribute("pacientes", pacienteService.listarTodosPacientes());
-    model.addAttribute("medicos", medicoService.listarTodosMedicos());
+    model.addAttribute("pacientes", pacienteUseCase.listarTodosPacientes());
+    model.addAttribute("medicos", medicoUseCase.listarTodosMedicos());
     return "consultas/form";
   }
 
-  @GetMapping("/excluir/{id}")
+  @Override
   public String excluirConsulta(@PathVariable String id, RedirectAttributes attributes) {
     try {
-      consultaService.excluirConsulta(id);
+      consultaUseCase.excluirConsulta(id);
       attributes.addFlashAttribute("mensagem", "Consulta excluída com sucesso!");
     } catch (Exception e) {
       attributes.addFlashAttribute("mensagemErro", "Erro ao excluir consulta: " + e.getMessage());

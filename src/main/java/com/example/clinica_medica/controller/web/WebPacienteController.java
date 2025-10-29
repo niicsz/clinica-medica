@@ -1,34 +1,38 @@
 package com.example.clinica_medica.controller.web;
 
-import com.example.clinica_medica.entities.Paciente;
-import com.example.clinica_medica.services.PacienteService;
+import com.example.clinica_medica.application.port.in.PacienteUseCase;
+import com.example.clinica_medica.domain.model.Paciente;
+import com.example.clinica_medica.generated.web.WebPacienteApi;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/pacientes")
-public class WebPacienteController {
+public class WebPacienteController implements WebPacienteApi {
 
-  @Autowired private PacienteService pacienteService;
+  private final PacienteUseCase pacienteUseCase;
 
-  @GetMapping
+  public WebPacienteController(PacienteUseCase pacienteUseCase) {
+    this.pacienteUseCase = pacienteUseCase;
+  }
+
+  @Override
   public String listarPacientes(Model model) {
-    model.addAttribute("pacientes", pacienteService.listarTodosPacientes());
+    model.addAttribute("pacientes", pacienteUseCase.listarTodosPacientes());
     return "pacientes/lista";
   }
 
-  @GetMapping("/novo")
+  @Override
   public String formNovoPaciente(Model model) {
     model.addAttribute("paciente", new Paciente());
     return "pacientes/form";
   }
 
-  @PostMapping("/salvar")
+  @Override
   public String salvarPaciente(
       @Valid @ModelAttribute("paciente") Paciente paciente,
       BindingResult result,
@@ -39,10 +43,10 @@ public class WebPacienteController {
 
     try {
       if (paciente.getId() == null) {
-        pacienteService.incluirPaciente(paciente);
+        pacienteUseCase.incluirPaciente(paciente);
         attributes.addFlashAttribute("mensagem", "Paciente cadastrado com sucesso!");
       } else {
-        pacienteService.atualizarPaciente(paciente.getId(), paciente);
+        pacienteUseCase.atualizarPaciente(paciente.getId(), paciente);
         attributes.addFlashAttribute("mensagem", "Paciente atualizado com sucesso!");
       }
       return "redirect:/pacientes";
@@ -54,9 +58,9 @@ public class WebPacienteController {
     }
   }
 
-  @GetMapping("/editar/{id}")
+  @Override
   public String formEditarPaciente(@PathVariable String id, Model model) {
-    Paciente paciente = pacienteService.buscarPacientePorId(id);
+    Paciente paciente = pacienteUseCase.buscarPacientePorId(id);
     if (paciente == null) {
       return "redirect:/pacientes";
     }
@@ -64,10 +68,10 @@ public class WebPacienteController {
     return "pacientes/form";
   }
 
-  @GetMapping("/excluir/{id}")
+  @Override
   public String excluirPaciente(@PathVariable String id, RedirectAttributes attributes) {
     try {
-      pacienteService.excluirPaciente(id);
+      pacienteUseCase.excluirPaciente(id);
       attributes.addFlashAttribute("mensagem", "Paciente excluído com sucesso!");
     } catch (Exception e) {
       attributes.addFlashAttribute("mensagemErro", "Erro ao excluir paciente: " + e.getMessage());

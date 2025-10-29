@@ -1,9 +1,9 @@
 package com.example.clinica_medica.generated.api;
 
-import com.example.clinica_medica.entities.Consulta;
-import com.example.clinica_medica.entities.Medico;
-import com.example.clinica_medica.entities.Paciente;
-import com.example.clinica_medica.entities.Usuario;
+import com.example.clinica_medica.domain.model.Consulta;
+import com.example.clinica_medica.domain.model.Medico;
+import com.example.clinica_medica.domain.model.Paciente;
+import com.example.clinica_medica.domain.model.Usuario;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import java.util.List;

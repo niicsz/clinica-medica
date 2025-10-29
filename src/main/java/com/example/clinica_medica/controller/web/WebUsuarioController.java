@@ -1,39 +1,43 @@
 package com.example.clinica_medica.controller.web;
 
-import com.example.clinica_medica.entities.Usuario;
+import com.example.clinica_medica.application.port.in.UsuarioUseCase;
+import com.example.clinica_medica.domain.model.Usuario;
+import com.example.clinica_medica.generated.web.WebUsuarioApi;
 import com.example.clinica_medica.security.UserRole;
-import com.example.clinica_medica.services.UsuarioService;
 import com.example.clinica_medica.utils.CPFUtils;
 import com.example.clinica_medica.utils.EmailUtils;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/usuarios")
-public class WebUsuarioController {
+public class WebUsuarioController implements WebUsuarioApi {
 
-  @Autowired private UsuarioService usuarioService;
+  private final UsuarioUseCase usuarioUseCase;
 
-  @GetMapping
+  public WebUsuarioController(UsuarioUseCase usuarioUseCase) {
+    this.usuarioUseCase = usuarioUseCase;
+  }
+
+  @Override
   public String listarUsuarios(Model model) {
-    model.addAttribute("usuarios", usuarioService.listarTodosUsuarios());
+    model.addAttribute("usuarios", usuarioUseCase.listarTodosUsuarios());
     model.addAttribute("rolesDisponiveis", UserRole.values());
     return "usuarios/lista";
   }
 
-  @GetMapping("/novo")
+  @Override
   public String formNovoUsuario(Model model) {
     model.addAttribute("usuario", new Usuario());
     model.addAttribute("rolesDisponiveis", UserRole.values());
     return "usuarios/form";
   }
 
-  @PostMapping("/salvar")
+  @Override
   public String salvarUsuario(
       @Valid @ModelAttribute("usuario") Usuario usuario,
       BindingResult result,
@@ -55,10 +59,10 @@ public class WebUsuarioController {
 
     try {
       if (usuario.getId() == null) {
-        usuarioService.incluirUsuario(usuario);
+        usuarioUseCase.incluirUsuario(usuario);
         attributes.addFlashAttribute("mensagem", "Usuário cadastrado com sucesso!");
       } else {
-        usuarioService.atualizarUsuario(usuario.getId(), usuario);
+        usuarioUseCase.atualizarUsuario(usuario.getId(), usuario);
         attributes.addFlashAttribute("mensagem", "Usuário atualizado com sucesso!");
       }
       return "redirect:/usuarios";
@@ -70,9 +74,9 @@ public class WebUsuarioController {
     }
   }
 
-  @GetMapping("/editar/{id}")
+  @Override
   public String formEditarUsuario(@PathVariable String id, Model model) {
-    Usuario usuario = usuarioService.buscarUsuarioPorId(id);
+    Usuario usuario = usuarioUseCase.buscarUsuarioPorId(id);
     if (usuario == null) {
       return "redirect:/usuarios";
     }
@@ -82,10 +86,10 @@ public class WebUsuarioController {
     return "usuarios/form";
   }
 
-  @GetMapping("/excluir/{id}")
+  @Override
   public String excluirUsuario(@PathVariable String id, RedirectAttributes attributes) {
     try {
-      usuarioService.excluirUsuario(id);
+      usuarioUseCase.excluirUsuario(id);
       attributes.addFlashAttribute("mensagem", "Usuário excluído com sucesso!");
     } catch (Exception e) {
       attributes.addFlashAttribute("mensagemErro", "Erro ao excluir usuário: " + e.getMessage());

@@ -1,13 +1,12 @@
 package com.example.clinica_medica.config;
 
-import com.example.clinica_medica.entities.Medico;
-import com.example.clinica_medica.entities.Paciente;
-import com.example.clinica_medica.entities.Usuario;
+import com.example.clinica_medica.application.port.in.MedicoUseCase;
+import com.example.clinica_medica.application.port.in.PacienteUseCase;
+import com.example.clinica_medica.application.port.in.UsuarioUseCase;
+import com.example.clinica_medica.domain.model.Medico;
+import com.example.clinica_medica.domain.model.Paciente;
+import com.example.clinica_medica.domain.model.Usuario;
 import com.example.clinica_medica.security.UserRole;
-import com.example.clinica_medica.services.MedicoService;
-import com.example.clinica_medica.services.PacienteService;
-import com.example.clinica_medica.services.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,11 +16,20 @@ import org.springframework.context.annotation.Profile;
 @Profile("test")
 public class TestConfig {
 
-  @Autowired private MedicoService medicoService;
+  private final MedicoUseCase medicoUseCase;
 
-  @Autowired private PacienteService pacienteService;
+  private final PacienteUseCase pacienteUseCase;
 
-  @Autowired private UsuarioService usuarioService;
+  private final UsuarioUseCase usuarioUseCase;
+
+  public TestConfig(
+      MedicoUseCase medicoUseCase,
+      PacienteUseCase pacienteUseCase,
+      UsuarioUseCase usuarioUseCase) {
+    this.medicoUseCase = medicoUseCase;
+    this.pacienteUseCase = pacienteUseCase;
+    this.usuarioUseCase = usuarioUseCase;
+  }
 
   @Bean
   public CommandLineRunner initTestData() {
@@ -29,38 +37,38 @@ public class TestConfig {
       Medico medico1 = new Medico();
       medico1.setNome("Dr. João Silva");
       medico1.setEspecialidade("Cardiologia");
-      medicoService.incluirMedico(medico1);
+      medicoUseCase.incluirMedico(medico1);
 
       Medico medico2 = new Medico();
       medico2.setNome("Dra. Maria Souza");
       medico2.setEspecialidade("Pediatria");
-      medicoService.incluirMedico(medico2);
+      medicoUseCase.incluirMedico(medico2);
 
       Medico medico3 = new Medico();
       medico3.setNome("Dr. Pedro Santos");
       medico3.setEspecialidade("Ortopedia");
-      medicoService.incluirMedico(medico3);
+      medicoUseCase.incluirMedico(medico3);
 
       Paciente paciente1 = new Paciente();
       paciente1.setNome("Ana Oliveira");
       paciente1.setCpf("12345678901");
       paciente1.setIdade(35);
       paciente1.setEmail("ana@email.com");
-      pacienteService.incluirPaciente(paciente1);
+      pacienteUseCase.incluirPaciente(paciente1);
 
       Paciente paciente2 = new Paciente();
       paciente2.setNome("Carlos Pereira");
       paciente2.setCpf("98765432109");
       paciente2.setIdade(42);
       paciente2.setEmail("carlos@email.com");
-      pacienteService.incluirPaciente(paciente2);
+      pacienteUseCase.incluirPaciente(paciente2);
 
       Paciente paciente3 = new Paciente();
       paciente3.setNome("Mariana Costa");
       paciente3.setCpf("45678912345");
       paciente3.setIdade(28);
       paciente3.setEmail("mariana@email.com");
-      pacienteService.incluirPaciente(paciente3);
+      pacienteUseCase.incluirPaciente(paciente3);
 
       Usuario usuario1 = new Usuario();
       usuario1.setNome("Admin");
@@ -69,7 +77,7 @@ public class TestConfig {
       usuario1.setEmail("admin@clinica.com");
       usuario1.setSenha("Senha123!");
       usuario1.setRoles(java.util.Set.of(UserRole.ADMIN));
-      usuarioService.incluirUsuario(usuario1);
+      usuarioUseCase.incluirUsuario(usuario1);
 
       Usuario usuario2 = new Usuario();
       usuario2.setNome("Recepcionista");
@@ -78,7 +86,7 @@ public class TestConfig {
       usuario2.setEmail("recepcao@clinica.com");
       usuario2.setSenha("Senha456!");
       usuario2.setRoles(java.util.Set.of(UserRole.RECEPCIONISTA));
-      usuarioService.incluirUsuario(usuario2);
+      usuarioUseCase.incluirUsuario(usuario2);
     };
   }
 }
