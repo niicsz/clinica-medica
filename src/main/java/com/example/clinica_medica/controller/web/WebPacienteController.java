@@ -42,6 +42,10 @@ public class WebPacienteController implements WebPacienteApi {
     }
 
     try {
+      if (paciente.getId() != null && paciente.getId().trim().isEmpty()) {
+        paciente.setId(null);
+      }
+
       if (paciente.getId() == null) {
         pacienteUseCase.incluirPaciente(paciente);
         attributes.addFlashAttribute("mensagem", "Paciente cadastrado com sucesso!");

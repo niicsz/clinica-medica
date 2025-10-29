@@ -42,6 +42,10 @@ public class WebMedicoController implements WebMedicoApi {
     }
 
     try {
+      if (medico.getId() != null && medico.getId().trim().isEmpty()) {
+        medico.setId(null);
+      }
+
       if (medico.getId() == null) {
         medicoUseCase.incluirMedico(medico);
         attributes.addFlashAttribute("mensagem", "Médico cadastrado com sucesso!");
